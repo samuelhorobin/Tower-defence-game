@@ -140,7 +140,7 @@ class SpriteAI(pygame.sprite.Sprite):
     def __init__(self, speed = 1) -> None:
         super().__init__()
 
-        rawImageDir = os.path.join("assets", "enemies", "enemy.png")
+        rawImageDir = os.path.join("Tower-defence-game", "assets", "enemies", "enemy.png")
         rawImage = pygame.image.load(rawImageDir)
         self.image, self.rect = extrapolateImage(rawImage, pos = (0,0), float = True)
         self.heightOffset = (8 * UPSCALE) - self.image.get_height()
@@ -340,7 +340,7 @@ class Map:
     def load(self, upperLayer, map: str, pos = (0,0)):
         self.pos = pos
 
-        mapDir = os.path.join("assets", "maps", map)
+        mapDir = os.path.join("Tower-defence-game", "assets", "maps", map)
         dataDir = os.path.join(mapDir, f"{map}.tmj")
 
         with open(dataDir, "r") as f:
