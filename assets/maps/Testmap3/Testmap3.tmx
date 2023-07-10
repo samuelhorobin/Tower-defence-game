@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="32" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <editorsettings>
+  <export target="Testmap3.tmj" format="json"/>
+ </editorsettings>
+ <tileset firstgid="1" name="tile-sheet" tilewidth="32" tileheight="16" tilecount="3" columns="3">
+  <image source="tile-sheet.png" trans="ff00ff" width="96" height="16"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="8" height="8" offsetx="1" offsety="3">
+  <data encoding="csv">
+2,1,2,1,2,1,2,1,
+1,2,1,2,1,2,1,2,
+2,1,2,1,2,1,2,1,
+1,2,1,2,1,2,1,2,
+2,1,2,1,2,1,2,1,
+1,2,1,2,1,2,1,2,
+2,1,2,1,2,1,2,1,
+1,2,1,2,1,2,1,2
+</data>
+ </layer>
+</map>
