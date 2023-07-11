@@ -29,6 +29,7 @@ def get_animation(spritesheetDir, animation, spritesheetName = "spritesheet", da
 
         return frames
     
+
 def extrapolateImage(rawImage, pos, float = False, rect = True):
     newDimensions = (rawImage.get_width() * settings.UPSCALE, rawImage.get_height() * settings.UPSCALE)
     if rect == False:
@@ -38,6 +39,7 @@ def extrapolateImage(rawImage, pos, float = False, rect = True):
             return pygame.transform.scale(rawImage, newDimensions).convert_alpha(), pygame.Rect(pos, newDimensions)
         elif float == True:
             return pygame.transform.scale(rawImage, newDimensions).convert_alpha(), pygame.FRect(pos, newDimensions)
+        
         
 def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
     ''' L = max val, k = growth rate, a = xVal of midpoint'''
