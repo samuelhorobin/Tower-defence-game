@@ -48,3 +48,15 @@ def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
     
     elif differentiated == True:
         return (L * k * np.exp(-k * (x - x0))) / (1 + np.exp(-k * (x - x0)))**2
+    
+def calcOffset(flavour):
+    if flavour == 3:
+        return 0, -8 * settings.UPSCALE
+    return 0, 0
+
+def allign(foreVol,  backVol = settings.RESOLUTION, backPos = (0,0), allignment = "centre"):
+    ''' Allignment format: "centre, topmiddle, topleft, left, bottomleft ect '''
+    xCent = int((backVol[0] / 2) - (foreVol[0] / 2)) + backPos[0] 
+    yCent = int((backVol[1] / 2) - (foreVol[1] / 2)) + backPos[1]
+
+    return xCent, yCent

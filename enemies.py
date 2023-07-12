@@ -141,8 +141,6 @@ class BusinessDwarf(SpriteAI):
     def update(self, map, screen, Foreground):
         self.move()
         self.draw(screen)
-        if len(self.journey) == 0:
-            self.set_goal(map, random.randint(0, 7), random.randint(0, 7))
 
     def damage(self, dmg, Foreground):
         for i in range(dmg):
