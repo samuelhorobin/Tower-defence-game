@@ -16,6 +16,7 @@ UPSCALE = settings.UPSCALE
 import keybinds
 import enemies
 import tools
+import towers
 import map as mp
 
 
@@ -46,6 +47,7 @@ class BlitSort:
             if sprite.__class__.__name__ == "BusinessDwarf":
                 sprite.update(map, screen, Foreground)
             elif   sprite.__class__.__name__ == "Rectparticle" \
+                or sprite.__class__.__name__ == "ElixirParticle" \
                 or sprite.__class__.__name__ == "Tile":
                 sprite.update(screen)
 
@@ -67,18 +69,14 @@ def main():
     map.load_pathing()
     
     subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 1)
-    subject.spawn(map, 1)
+    subject.spawn(map, 4)
     Foreground.add(subject)
     subject.set_goal(map, 0, 0)
 
-    # enemySprites = pygame.sprite.Group()
-    # for i in range(10):
-    #     enemySprites.add(enemies.BusinessDwarf(random.uniform(1,4), speed = 3))
-    
-    # for sprite in enemySprites:
-    #     sprite.spawn(map, random.randint(0, 7))
-    #     Foreground.add(sprite)
-    #     sprite.set_goal(map, 0, random.randint(0, 7))
+    cog = towers.CogWheel()
+    cog.set_pos((1,7), map)
+
+    subject.find_goal(map)
 
     while True:
         clock.tick(60)
@@ -93,9 +91,11 @@ def main():
         SCREEN.fill((0,0,0))
 
         map.update(SCREEN)
+        cog.update(SCREEN)
         Foreground.update(SCREEN, map, Foreground, map)
 
         pygame.display.update()
+        
 
     
 

@@ -7,7 +7,7 @@ class Rectparticle(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
         self.width = self.height = random.randint(1, 2) * 5
-        self.colour = (random.randint(150, 200), 61, 61)
+        self.rgb = (random.randint(150, 200), 61, 61)
         self.rect = pygame.FRect(pos, (self.width, self.height))
 
         self.lifespan = 2 + random.uniform(-1, 1) # s
@@ -40,4 +40,14 @@ class Rectparticle(pygame.sprite.Sprite):
         if abs(self.xComp) < 0.5: self.xComp = 0
         self.yComp += self.yGrav
 
-        pygame.draw.rect(screen, self.colour, self.rect)
+        pygame.draw.rect(screen, self.rgb, self.rect)
+
+class ElixirParticle(Rectparticle):
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.width = self.height = random.randint(2, 3) * 5
+        self.rgb = (66, random.randint(0, 70), 144)
+        self.rect = pygame.FRect(pos, (self.width, self.height))
+        
+
+        

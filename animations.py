@@ -21,3 +21,9 @@ def business_dwarf():
     idleSW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleSE]
 
     return [walkS, walkSW, walkW, walkNW, walkN, walkNE, walkE, walkSE, idleS, idleSE, idleE, idleNE, idleN, idleNW, idleW, idleSW]
+
+def cogwheel():
+    idleE = tools.get_animation("Tower-defence-game/assets/towers/Cogwall", "idleE")
+    idleW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleE]
+    
+    return [idleE, idleW]

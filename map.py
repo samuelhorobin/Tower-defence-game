@@ -24,6 +24,7 @@ class MapManager:
     def __init__(self) -> None:
         self.tiles = pygame.sprite.Group()
 
+
     def load(self, upperLayer, map: str, pos = (0,0)):
         self.pos = pos
 
@@ -37,9 +38,12 @@ class MapManager:
         height = data["height"]
 
         self.tileGrid = np.array_split(tileList, height)
+        self.towerGrid = [[0 for x in y] for y in self.tileGrid]
+
         self.size = (len(self.tileGrid) * 32 * settings.UPSCALE, len(self.tileGrid[0]) * 16 * settings.UPSCALE)
         self.load_tiles(upperLayer)
         
+
     def load_tiles(self, upperLayer):
         whitelist = [1, 2]
         for i, y in enumerate(self.tileGrid):
@@ -52,6 +56,7 @@ class MapManager:
                     self.tiles.add(tile)
                 elif x == 3:
                     upperLayer.add(tile)
+
 
     def load_pathing(self):
         traversableWhitelist = [1,2]
@@ -67,6 +72,7 @@ class MapManager:
                 else:
                     self.NodeManager.add_wall(i, k)
         
+
     def setpos(self, pos, upperLayer):
         self.pos = pos
 
@@ -74,6 +80,7 @@ class MapManager:
         upperLayer.list.empty()
 
         self.load_tiles(upperLayer)
+
 
     def update(self, screen):
         self.tiles.update(screen)
