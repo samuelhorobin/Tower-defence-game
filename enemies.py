@@ -52,31 +52,11 @@ class SpriteAI(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = posX, posY
         self.spawned = True
 
-    def find_goal(self, map):
-        
-        height = len(map.towerGrid)
-        rows = list(range(height))
-        currentRow = self.gridPos[1]
+    def find_goal(self, map): # For multiple goal nodes
+        self.gridJourney = map.NodeManager.navigate()
+        self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
 
-        sortedRows = []
-        tempRows = rows
-
-        while len(tempRows) > 0: # Orders rows ascending from center (current row) to outer rows
-            print(rows)
-            closestItem = min(tempRows, key=lambda x:abs(x-currentRow))
-            sortedRows.append(closestItem)
-            tempRows.remove(closestItem)
-
-        for row in sortedRows:
-            pass
-
-            
-
-
-
-
-
-    def set_goal(self, map, column, row):
+    def set_goal(self, map, column, row): #A* algorithm
         self.gridJourney = map.NodeManager.navigate(self.gridPos, (column, row))
         self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
 

@@ -76,7 +76,7 @@ def main():
     cog = towers.CogWheel()
     cog.set_pos((1,7), map)
 
-    subject.find_goal(map)
+    #subject.find_goal(map)
 
     while True:
         clock.tick(60)
