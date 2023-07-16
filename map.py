@@ -10,11 +10,13 @@ import numpy as np
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, flavour) -> None:
+    def __init__(self, pos, flavour, gridPos) -> None:
         super().__init__()
         rawImageDir = tileflavours.tileFlavours[flavour]
         rawImage = pygame.image.load(rawImageDir)
         self.image, self.rect = tools.extrapolateImage(rawImage, pos)
+        self.gridPos = gridPos
+        self.flavour = flavour
 
     def update(self, screen) -> None:
         screen.blit(self.image, self.rect.topleft)
@@ -23,6 +25,7 @@ class Tile(pygame.sprite.Sprite):
 class MapManager:
     def __init__(self) -> None:
         self.tiles = pygame.sprite.Group()
+        self.towers = pygame.sprite.Group()
 
 
     def load(self, upperLayer, map: str, pos = (0,0)):
@@ -50,7 +53,7 @@ class MapManager:
             for k, x in enumerate(y):
                 xOffset, yOffset = [self.pos[i] + val for i, val in enumerate(tools.calcOffset(x))]
                 pos = (xOffset + (k * 32 * settings.UPSCALE), yOffset + (i * 16 * settings.UPSCALE))
-                tile = Tile(pos = pos, flavour = str(x))
+                tile = Tile(pos = pos, flavour = str(x), gridPos = (k, i))
             
                 if x in whitelist:
                     self.tiles.add(tile)

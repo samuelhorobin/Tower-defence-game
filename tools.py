@@ -49,10 +49,12 @@ def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
     elif differentiated == True:
         return (L * k * np.exp(-k * (x - x0))) / (1 + np.exp(-k * (x - x0)))**2
     
+    
 def calcOffset(flavour):
     if flavour == 3:
         return 0, -8 * settings.UPSCALE
     return 0, 0
+
 
 def allign(foreVol,  backVol = settings.RESOLUTION, backPos = (0,0), allignment = "centre"):
     ''' Allignment format: "centre, topmiddle, topleft, left, bottomleft ect '''
@@ -60,6 +62,7 @@ def allign(foreVol,  backVol = settings.RESOLUTION, backPos = (0,0), allignment 
     yCent = int((backVol[1] / 2) - (foreVol[1] / 2)) + backPos[1]
 
     return xCent, yCent
+
 
 def rotate(surface, angle, pivot, offset):
     """Rotate the surface around the pivot point.
@@ -75,6 +78,7 @@ def rotate(surface, angle, pivot, offset):
     # Add the offset vector to the center/pivot point to shift the rect.
     rect = rotated_image.get_rect(center=pivot+rotated_offset)
     return rotated_image, rect
+
 
 def blitRotate(surf, image, pos, originPos, angle):
 
@@ -97,3 +101,32 @@ def blitRotate(surf, image, pos, originPos, angle):
   
     # draw rectangle around the image
     pygame.draw.rect(surf, (255, 0, 0), (*rotated_image_rect.topleft, *rotated_image.get_size()),2)
+
+
+def get_neighbours(map, tile, layer = "tiles"):
+    '''Layers: towers, tiles '''
+    neighbours = []
+    pos = tile.gridPos
+    for direction in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
+        neighbourPos = (pos[0] + direction[0], pos[1] + direction[1])
+        try:
+            if layer == "tiles": neighbour = get_tile(map, neighbourPos, layer = "tiles")
+            if layer == "towers": neighbour = get_tile(map, neighbourPos, layer = "towers")
+        except IndexError:
+            neighbour = None
+
+        neighbours.append(neighbour)
+    
+    return neighbours
+
+def get_tile(map, pos, layer = "tiles"):
+    ''' Layers: towers, tiles '''
+    if layer == "tiles":
+        for tile in map.tiles:
+            if tile.gridPos == pos:
+                return tile
+    elif layer == "towers":
+        for tower in map.towers:
+            if tower.gridPos == pos:
+                return tower
+    return None

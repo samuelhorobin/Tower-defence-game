@@ -48,6 +48,7 @@ class BlitSort:
                 sprite.update(map, screen, Foreground)
             elif   sprite.__class__.__name__ == "Rectparticle" \
                 or sprite.__class__.__name__ == "ElixirParticle" \
+                or sprite.__class__.__name__ == "CogWheel" \
                 or sprite.__class__.__name__ == "Tile":
                 sprite.update(screen)
 
@@ -68,21 +69,31 @@ def main():
     map.setpos(tools.allign(map.size), Foreground)
     map.load_pathing()
     
-    subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 1)
+    subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 2)
     subject.spawn(map, 4)
     Foreground.add(subject)
-    subject.set_goal(map, 0, 0)
+
+    for i in range(100):
+        test = enemies.BusinessDwarf(Foreground = Foreground, speed = random.uniform(2, 3))
+        test.spawn(map, random.randint(0,7))
+        Foreground.add(test)
+
+    # for i in range(8):
+    #     cog = towers.CogWheel()
+    #     cog.set_pos((0,i), map)
+    #     map.towers.add(cog)
+    #     Foreground.add(cog)
 
     cog = towers.CogWheel()
-    cog.set_pos((1,7), map)
-
-    #subject.find_goal(map)
+    cog.set_pos((0,4), map)
+    map.towers.add(cog)
+    Foreground.add(cog)
 
     while True:
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                #profiler.print_stats(sort='tottime')
+                profiler.print_stats(sort='tottime')
                 pygame.quit()
                 raise SystemExit
             elif event.type == pygame.KEYDOWN:
@@ -91,13 +102,10 @@ def main():
         SCREEN.fill((0,0,0))
 
         map.update(SCREEN)
-        cog.update(SCREEN)
         Foreground.update(SCREEN, map, Foreground, map)
 
         pygame.display.update()
-        
 
-    
 
 if __name__ == "__main__":
     profiler = cProfile.Profile()

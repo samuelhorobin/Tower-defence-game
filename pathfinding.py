@@ -3,6 +3,7 @@ import pygame
 # Libraries
 import pygame
 import numpy as np
+import tools
 
 # Classes
 class Node:
@@ -31,11 +32,11 @@ class Grid:
         self.grid[pos[0]][pos[1]] = 0
 
 
-    def navigate(self, start, end):
+    def navigate(self, start, end, heuristic = True):
         startNode = Node(start, None)
-        startNode.g = startNode.f = startNode.h = 0
-        endNode = Node(end, None)
-        endNode.g = endNode.f = endNode.h = 0
+        if isinstance(end, list): endNodes = [Node(end, None) for end in end]
+        elif isinstance(end, tuple): endNodes = [Node(end, None)]
+
 
         openList = [startNode]
         closedList = []
@@ -52,17 +53,16 @@ class Grid:
             openList.pop(currentIndex)
             closedList.append(currentNode)
 
+            for endNode in endNodes:
+                if currentNode == endNode:
+                    path = []
+                    previousNode = currentNode
+                    while previousNode is not None:
+                        path.append(previousNode.pos)
+                        previousNode = previousNode.parent
 
-            if currentNode == endNode:
-                path = []
-                previousNode = currentNode
-                while previousNode is not None:
-                    path.append(previousNode.pos)
-                    previousNode = previousNode.parent
-
-                return path[::-1]
+                    return path[::-1]
             
-
             children = []
             
             for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, 1), (-1, -1), (1, -1)]:
@@ -92,7 +92,16 @@ class Grid:
                     continue
 
                 child.g = currentNode.g + 1
-                child.h = (((child.pos[0] - endNode.pos[0]) ** 2) + ((child.pos[1] - endNode.pos[1]) ** 2))**1/2
+
+                child.h = 0
+                
+                if heuristic == True:
+                    for endNode in endNodes:
+                        h = (((child.pos[0] - endNode.pos[0]) ** 2) + ((child.pos[1] - endNode.pos[1]) ** 2))**(1/2)
+
+                        if child.h == 0: child.h = h
+                        if h < child.h : child.h = h
+
                 child.f = child.g + child.h
 
                 if child in openList:
@@ -129,9 +138,11 @@ def main():
                 PMap.add_wall(i, k)
 
     start = (4, 2)
-    end = (0,1)
 
-    path = PMap.navigate(start, end)
+    goals = (0, 1)
+    #goals = [(0, 1), (0, 4)]
+
+    path = PMap.navigate(start, goals)
 
 
 
@@ -160,9 +171,14 @@ def main():
         startRect = pygame.Rect(start[0]*50, start[1]*50, 50, 50)
         pygame.draw.rect(SCREEN, (189, 72, 68), startRect)
 
-        endRect = pygame.Rect(end[0]*50, end[1]*50, 50, 50)
-        pygame.draw.rect(SCREEN, (105, 148, 52), endRect)
+        if isinstance(goals, list):
+            for goal in goals:
+                endRect = pygame.Rect(goal[0]*50, goal[1]*50, 50, 50)
+                pygame.draw.rect(SCREEN, (105, 148, 52), endRect)
 
+        elif not isinstance(goals, list):
+            endRect = pygame.Rect(goals[0]*50, goals[1]*50, 50, 50)
+            pygame.draw.rect(SCREEN, (105, 148, 52), endRect)
 
         pygame.display.update()
     
@@ -176,4 +192,4 @@ if __name__ == "__main__":
     
 
 
-#AAAA
+ 

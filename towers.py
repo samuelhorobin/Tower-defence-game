@@ -31,10 +31,13 @@ class CogWheel(pygame.sprite.Sprite):
 
         self.image = self.idleE[0][0]
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
+        self.gridPos = None
 
         self.state = "idle"
 
     def set_pos(self, coords, map):
+        self.gridPos = coords
+
         map.towerGrid[coords[1]][coords[0]] = self.identifier
 
         left = map.pos[0] + (coords[0] * 32 * settings.UPSCALE)

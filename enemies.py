@@ -33,6 +33,8 @@ class SpriteAI(pygame.sprite.Sprite):
         rawImage = pygame.image.load(rawImageDir)
         self.image, self.rect = tools.extrapolateImage(rawImage, pos = (0,0), float = True)
         self.heightOffset = (8 * settings.UPSCALE) - self.image.get_height()
+        
+        self.isNextToTowerVar = False
 
         self.spawnIter = 0
         self.spawned = False
@@ -40,6 +42,8 @@ class SpriteAI(pygame.sprite.Sprite):
         self.journey = []
         self.speed = speed
         self.movement = (0,0)
+        self.hitbox = pygame.rect.Rect((0,0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
+        self.hitbox.midbottom = self.rect.midbottom
 
         self.accY = self.accX = 0 #Accumulated speeds for decimal movement
 
@@ -52,19 +56,81 @@ class SpriteAI(pygame.sprite.Sprite):
         self.rect.x, self.rect.y = posX, posY
         self.spawned = True
 
-    def find_goal(self, map): # For multiple goal nodes
-        self.gridJourney = map.NodeManager.navigate()
-        self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
-
-    def set_goal(self, map, column, row): #A* algorithm
-        self.gridJourney = map.NodeManager.navigate(self.gridPos, (column, row))
+    def go_to(self, map, goals): #A* algorithm
+        self.gridJourney = map.NodeManager.navigate(self.gridPos, goals)
         self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
 
         nodeOffset = (160 - self.rect.width) // 2
         self.journey = [(node[0] + nodeOffset, node[1] + self.heightOffset) for node in self.journey]
 
 
-    def move(self) -> None:
+    def go_up_to(self, map, goals):
+        self.go_to(map, goals)
+        self.journey.pop(-1)
+
+    def find_tower(self, map, whitelist = [], blacklist = [0]):
+        goals = []
+        for y, row in enumerate(map.towerGrid):
+            for x, tower in enumerate(row):
+                if tower in whitelist and tower not in blacklist:
+                    goals.append((x, y))
+                elif whitelist == [] and tower not in blacklist:
+                    goals.append((x, y))
+        self.go_up_to(map, goals)
+
+    def adjust_to_tower(self, map):
+        ''' Moves a sprite from diagonal of a tower to adjascent '''
+        tile = self.get_closest_tile(map)
+        for neighbour in tools.get_neighbours(map, tile):
+            if neighbour != 3 and neighbour != None:
+                for secondNeighbour in tools.get_neighbours(map, neighbour, layer = "towers"):
+                    if secondNeighbour != 0 and secondNeighbour != None:
+                        self.go_to(map, neighbour.gridPos)
+                        return  
+
+    def recalibrate_gridPos(self, map):
+        tile = self.get_closest_tile(map)
+        self.gridPos = tile.gridPos
+    
+    def get_closest_tile(self, map):
+        closestTile = None
+        closestDist = None
+        for tile in map.tiles:
+            if closestTile == None: closestTile = tile
+            
+            deltaY = self.rect.midbottom[0] - tile.rect.midbottom[0]
+            deltaX = self.rect.midbottom[1] - tile.rect.midbottom[1]
+            distance = (deltaY**2 + deltaX**2)**(1/2)
+
+            if closestDist == None: closestDist = distance
+
+            if distance < closestDist:
+                closestTile = tile
+                closestDist = distance
+
+        return closestTile
+    
+    def next_to_tower(self, map):
+        ''' Returns True if next to tower, False otherwise '''
+        if self.isNextToTowerVar:
+            return True
+        
+        tile = self.get_closest_tile(map)
+        for neighbour in tools.get_neighbours(map, tile, layer = "towers"):
+            if neighbour != 0 and neighbour != None:
+                self.isNextToTowerVar = True
+                return True
+                print("a")
+            
+        return False
+
+    def touching_tower(self, map, tower = "all"):
+        ''' default: tower = "all", alternative, tower = <tower> '''
+        if tower == "all":
+            for tower in map.towers:
+                pass           
+
+    def move(self, map) -> None:
         self.goals.update()
 
         if self.spawnIter < 0.7 and self.spawned == True:
@@ -72,7 +138,7 @@ class SpriteAI(pygame.sprite.Sprite):
             self.rect.move_ip(deltaX, 0)
             self.spawnIter += 0.01 * self.speed
 
-        if self.spawnIter > 0.7 and len(self.journey) > 0:
+        if self.spawnIter > 0.4 and len(self.journey) > 0:
             destX = self.journey[0][0]
             destY = self.journey[0][1]
 
@@ -82,15 +148,16 @@ class SpriteAI(pygame.sprite.Sprite):
             if destY - self.speed < int(self.rect.y) and destY + self.speed > int(self.rect.y): yBound = True
             else: yBound = False
 
-            if yBound == True and xBound == True:
-                self.movement = (0,0)
-
             if xBound and yBound:
                 self.journey.pop(0)
                 self.gridPos = self.gridJourney.pop(0)
+                self.movement = (0,0)
                 if len(self.journey) > 0:
                     destX = self.journey[0][0]
                     destY = self.journey[0][1]
+
+                self.isNextToTowerVar = False
+                self.next_to_tower(map)
                 
 
             deltaX = deltaY = 0
@@ -138,11 +205,20 @@ class BusinessDwarf(SpriteAI):
         self.image = self.idleS[0][0]
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
         self.heightOffset -= 2 * settings.UPSCALE
+
+
         
 
+    def next_move(self, map):
+        if len(self.journey) == 0 and not self.next_to_tower(map):
+            self.find_tower(map)
+            self.adjust_to_tower(map)
+
+
     def update(self, map, screen, Foreground):
-        self.move()
+        self.move(map)
         self.draw(screen)
+        self.next_move(map)
 
     def damage(self, dmg, Foreground):
         for i in range(dmg):
