@@ -42,8 +42,11 @@ class SpriteAI(pygame.sprite.Sprite):
         self.journey = []
         self.speed = speed
         self.movement = (0,0)
-        self.hitbox = pygame.rect.Rect((0,0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
-        self.hitbox.midbottom = self.rect.midbottom
+        self.hitbox = pygame.FRect((0,0), (14 * settings.UPSCALE, 14 * settings.UPSCALE))
+        self.hitboxOffset = 1 * settings.UPSCALE
+
+        self.target = self.gridTarget = None
+        self.attacking = False
 
         self.accY = self.accX = 0 #Accumulated speeds for decimal movement
 
@@ -51,22 +54,26 @@ class SpriteAI(pygame.sprite.Sprite):
         self.gridPos = [len(map.tileGrid[row]) - 1, row]
 
         posX = map.pos[0] + len(map.tileGrid[row]) * 32 * settings.UPSCALE
-        posY = map.pos[1] + self.heightOffset + row * 16 * settings.UPSCALE
+        posY = map.pos[1] + self.hitboxOffset + row * 16 * settings.UPSCALE
 
-        self.rect.x, self.rect.y = posX, posY
+        self.hitbox.x, self.hitbox.y = posX, posY
         self.spawned = True
 
     def go_to(self, map, goals): #A* algorithm
         self.gridJourney = map.NodeManager.navigate(self.gridPos, goals)
-        self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
+        self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + self.hitboxOffset + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
 
-        nodeOffset = (160 - self.rect.width) // 2
-        self.journey = [(node[0] + nodeOffset, node[1] + self.heightOffset) for node in self.journey]
+        nodeOffset = (160 - self.hitbox.width) // 2
+        self.journey = [(node[0] + nodeOffset, node[1]) for node in self.journey]
+        return self.gridJourney[-1]
 
 
-    def go_up_to(self, map, goals):
+    def go_up_to(self, map, goals, distance = 1):
         self.go_to(map, goals)
-        self.journey.pop(-1)
+        for _ in range(distance):
+            self.journey.pop(-1)
+            lastGrisPos = self.gridJourney.pop(-1)
+        return lastGrisPos
 
     def find_tower(self, map, whitelist = [], blacklist = [0]):
         goals = []
@@ -76,7 +83,9 @@ class SpriteAI(pygame.sprite.Sprite):
                     goals.append((x, y))
                 elif whitelist == [] and tower not in blacklist:
                     goals.append((x, y))
-        self.go_up_to(map, goals)
+
+        self.target = self.go_up_to(map, goals)
+        self.gridTarget = tools.get_tile(map, self.target).gridPos
 
     def adjust_to_tower(self, map):
         ''' Moves a sprite from diagonal of a tower to adjascent '''
@@ -98,8 +107,8 @@ class SpriteAI(pygame.sprite.Sprite):
         for tile in map.tiles:
             if closestTile == None: closestTile = tile
             
-            deltaY = self.rect.midbottom[0] - tile.rect.midbottom[0]
-            deltaX = self.rect.midbottom[1] - tile.rect.midbottom[1]
+            deltaY = self.hitbox.midbottom[0] - tile.rect.midbottom[0]
+            deltaX = self.hitbox.midbottom[1] - tile.rect.midbottom[1]
             distance = (deltaY**2 + deltaX**2)**(1/2)
 
             if closestDist == None: closestDist = distance
@@ -120,38 +129,57 @@ class SpriteAI(pygame.sprite.Sprite):
             if neighbour != 0 and neighbour != None:
                 self.isNextToTowerVar = True
                 return True
-                print("a")
             
         return False
 
     def touching_tower(self, map, tower = "all"):
-        ''' default: tower = "all", alternative, tower = <tower> '''
+        ''' default: tower = "all", alternative, tower = <tower>
+            Returns None if not touching                              '''
         if tower == "all":
             for tower in map.towers:
-                pass           
+                if self.hitbox.colliderect(tower.hitbox):
+                    direction = tools.collisionDir(tower.hitbox, self.hitbox)
+                    return direction
+            return None
+        
+        elif tower != "all":
+            if self.hitbox.colliderect(tower.hitbox):
+                    direction = tools.collisionDir(tower.hitbox, self.hitbox)
+                    return direction
+            return None
+        
+    def collide(self, direction, targetTower):
+        if direction == (1, 0): self.hitbox.left = targetTower.hitbox.right
+        if direction == (0, 1): self.hitbox.bottom = targetTower.hitbox.top
+        if direction == (-1, 0): self.hitbox.right = targetTower.hitbox.left
+        if direction == (0, -1): self.hitbox.top = targetTower.hitbox.bottom
+
+
+
+        
 
     def move(self, map) -> None:
         self.goals.update()
+        self.movement = (0,0)
 
         if self.spawnIter < 0.7 and self.spawned == True:
             deltaX = logistic_function(self.spawnIter, differentiated = True) * -1.2 * self.speed
-            self.rect.move_ip(deltaX, 0)
+            self.hitbox.move_ip(deltaX, 0)
             self.spawnIter += 0.01 * self.speed
 
-        if self.spawnIter > 0.4 and len(self.journey) > 0:
+        if self.spawnIter > 0.5 and len(self.journey) > 0:
             destX = self.journey[0][0]
             destY = self.journey[0][1]
 
-            if destX - self.speed < int(self.rect.x) and destX + self.speed > int(self.rect.x): xBound = True
+            if destX - self.speed < int(self.hitbox.x) and destX + self.speed > int(self.hitbox.x): xBound = True
             else: xBound = False
 
-            if destY - self.speed < int(self.rect.y) and destY + self.speed > int(self.rect.y): yBound = True
+            if destY - self.speed < int(self.hitbox.y) and destY + self.speed > int(self.hitbox.y): yBound = True
             else: yBound = False
 
             if xBound and yBound:
                 self.journey.pop(0)
                 self.gridPos = self.gridJourney.pop(0)
-                self.movement = (0,0)
                 if len(self.journey) > 0:
                     destX = self.journey[0][0]
                     destY = self.journey[0][1]
@@ -162,11 +190,11 @@ class SpriteAI(pygame.sprite.Sprite):
 
             deltaX = deltaY = 0
             
-            if destX - self.speed >= int(self.rect.x): deltaX = self.speed
-            if destY - self.speed >= int(self.rect.y): deltaY = self.speed
+            if destX - self.speed >= int(self.hitbox.x): deltaX = self.speed
+            if destY - self.speed >= int(self.hitbox.y): deltaY = self.speed
 
-            if destX + self.speed <= int(self.rect.x): deltaX = -self.speed
-            if destY + self.speed <= int(self.rect.y): deltaY = -self.speed
+            if destX + self.speed <= int(self.hitbox.x): deltaX = -self.speed
+            if destY + self.speed <= int(self.hitbox.y): deltaY = -self.speed
 
             vector = pygame.math.Vector2(deltaX, deltaY)
             self.movement = (deltaX / self.speed, deltaY / self.speed)
@@ -174,11 +202,12 @@ class SpriteAI(pygame.sprite.Sprite):
             if abs(deltaX) > 0 and abs(deltaY) > 0:
                 vector.scale_to_length(self.speed)
 
-            self.rect.x += vector.x
-            self.rect.y += vector.y
+            self.hitbox.x += vector.x
+            self.hitbox.y += vector.y
 
     def draw(self, screen):
         if self.spawned == True:
+            self.rect.midbottom = self.hitbox.midbottom
             screen.blit(self.image, self.rect.topleft)
 
     def update(self):
@@ -204,7 +233,7 @@ class BusinessDwarf(SpriteAI):
 
         self.image = self.idleS[0][0]
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
-        self.heightOffset -= 2 * settings.UPSCALE
+        self.heightOffset += 3 * settings.UPSCALE
 
 
         
@@ -213,6 +242,24 @@ class BusinessDwarf(SpriteAI):
         if len(self.journey) == 0 and not self.next_to_tower(map):
             self.find_tower(map)
             self.adjust_to_tower(map)
+
+        if self.next_to_tower(map):
+            targetTower = tools.get_tile(map, self.gridTarget, layer = "towers")
+            if targetTower != None:
+                selfCollisionDir = self.touching_tower(map, tower = targetTower)
+
+        if len(self.journey) == 0 and self.next_to_tower(map) and not self.attacking:
+            if selfCollisionDir == None:
+                self.go_to(map, targetTower.gridPos)
+
+        if len(self.journey) != 0 and self.next_to_tower(map):
+            if selfCollisionDir != None:
+                self.collide(selfCollisionDir, targetTower)
+                self.attacking = True
+                self.journey = []
+            
+
+
 
 
     def update(self, map, screen, Foreground):
@@ -229,6 +276,9 @@ class BusinessDwarf(SpriteAI):
             self.kill()
 
     def draw(self, screen):
+        self.rect.midbottom = self.hitbox.midbottom
+        self.rect.y += self.heightOffset
+
         dt = 1/60
         self.animationClock += dt * self.speed
 
@@ -285,3 +335,6 @@ class BusinessDwarf(SpriteAI):
             self.animationClock = 0
             self.idleFrame += 1
             if self.idleFrame == 4: self.idleFrame = 0
+
+        # Hitbox
+        #pygame.draw.rect(screen, (255,50,50), self.hitbox)

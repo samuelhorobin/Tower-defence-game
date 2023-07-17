@@ -26,6 +26,7 @@ class MapManager:
     def __init__(self) -> None:
         self.tiles = pygame.sprite.Group()
         self.towers = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
 
 
     def load(self, upperLayer, map: str, pos = (0,0)):

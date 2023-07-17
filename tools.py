@@ -130,3 +130,21 @@ def get_tile(map, pos, layer = "tiles"):
             if tower.gridPos == pos:
                 return tower
     return None
+
+def collisionDir(rect1, rect2):
+    deltaY = rect1.centery - rect2.centery
+    deltaX = rect1.centerx - rect2.centerx
+
+    if abs(deltaY) > abs(deltaX):
+        if deltaY > 0: return (0, 1)
+        elif deltaY < 0: return (0, -1)
+
+    elif abs(deltaY) < abs(deltaX):
+        if deltaX > 0: return (-1, 0)
+        elif deltaX < 0: return (1, 0)
+
+    elif abs(deltaY) == abs(deltaX):
+        if deltaY > 0 and deltaX > 0: return (-1, -1)
+        if deltaY < 0 and deltaX > 0: return (-1, 1)
+        if deltaY > 0 and deltaX < 0: return (1, -1)
+        if deltaY < 0 and deltaX < 0: return (1, 1)

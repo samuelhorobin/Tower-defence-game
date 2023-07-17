@@ -14,10 +14,10 @@ for animation in cogWheelAnimations:
 
 
 
-class CogWheel(pygame.sprite.Sprite):
+class TowerAI(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.identifier = 1
+        self.identifier = 0
 
         self.animationClock = self.idleFrame = self.walkFrame = 0
         self.facing = "West"
@@ -31,6 +31,7 @@ class CogWheel(pygame.sprite.Sprite):
 
         self.image = self.idleE[0][0]
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
+        self.hitbox = pygame.FRect((0,0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
         self.gridPos = None
 
         self.state = "idle"
@@ -43,7 +44,8 @@ class CogWheel(pygame.sprite.Sprite):
         left = map.pos[0] + (coords[0] * 32 * settings.UPSCALE)
         top = map.pos[1] + (coords[1] * 16 * settings.UPSCALE)
         tileRect = pygame.Rect((left, top), (32*settings.UPSCALE, 16*settings.UPSCALE))
-        self.rect.midbottom = tileRect.midbottom
+        self.rect.midbottom = self.hitbox.midbottom = tileRect.midbottom
+        
 
     def draw(self, screen):
         dt = 1/60
@@ -57,10 +59,6 @@ class CogWheel(pygame.sprite.Sprite):
                 self.animationClock = 0
 
                 if self.idleFrame == self.idleFrameCount: self.idleFrame = 0
-             
-         
-    def update(self, screen):
-        self.draw(screen)
 
     def damage(self, dmg, Foreground):
         for i in range(dmg):
@@ -69,3 +67,39 @@ class CogWheel(pygame.sprite.Sprite):
         if self.health <= 0:
             for _ in range(100): Foreground.add(particles.ElixirParticle(self.rect.center))
             self.kill()
+
+
+
+class CogWheel(TowerAI):
+    def __init__(self):
+        super().__init__()
+        self.identifier = 1
+        self.idleFrameCount = 6
+        self.idleE, self.idleW = cogWheelAnimations
+
+        self.attackBox = pygame.Rect((0,0), (8*settings.UPSCALE, 16*settings.UPSCALE))
+
+    def draw(self, screen):
+        dt = 1/60
+        self.animationClock += dt * self.speed
+
+        if self.state == "idle":
+            screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
+     
+            if self.animationClock >= self.secondsPerFrame:
+                self.idleFrame += 1
+                self.animationClock = 0
+
+                if self.idleFrame == self.idleFrameCount: self.idleFrame = 0
+
+    def update(self, screen, map):
+        self.draw(screen)
+        
+        if self.idleFrame == 5:
+            self.attack(screen, map)
+
+
+    def attack(self, screen, map):
+        self.attackBox.midleft = self.hitbox.midright
+        #pygame.draw.rect(screen, (255,50,50), self.attackBox)
+        
