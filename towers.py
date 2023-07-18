@@ -80,8 +80,8 @@ class CogWheel(TowerAI):
         self.attackBox = pygame.Rect((0,0), (8*settings.UPSCALE, 16*settings.UPSCALE))
 
     def draw(self, screen):
-        dt = 1/60
-        self.animationClock += dt * self.speed
+        self.dt = 1/60
+        self.animationClock += self.dt * self.speed
 
         if self.state == "idle":
             screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
@@ -95,7 +95,7 @@ class CogWheel(TowerAI):
     def update(self, screen, map, foreGround):
         self.draw(screen)
         
-        if self.idleFrame == 4:
+        if self.idleFrame == 4 and self.animationClock == 0 + self.dt * self.speed:
             self.attack(screen, map, foreGround)
 
 
@@ -103,7 +103,7 @@ class CogWheel(TowerAI):
         self.attackBox.midleft = self.hitbox.midright
         for enemy in map.enemies:
             if self.attackBox.colliderect(enemy.hitbox):
-                enemy.damage(5, foreGround)
+                enemy.damage(20, foreGround)
 
 
         #pygame.draw.rect(screen, (255,250,50), self.attackBox)

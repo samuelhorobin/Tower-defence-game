@@ -63,6 +63,8 @@ def main():
     pygame.display.set_caption("Game")
     clock = pygame.time.Clock()
 
+    frame = 0
+
     Foreground = BlitSort()
 
     map = mp.MapManager()
@@ -70,21 +72,23 @@ def main():
     map.setpos(tools.allign(map.size), Foreground)
     map.load_pathing()
     
-    # subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 2)
-    # subject.spawn(map, 1)
-    # Foreground.add(subject)
-    # map.enemies.add(subject)
+    subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 2)
+    subject.spawn(map, 3)
+    Foreground.add(subject)
+    map.enemies.add(subject)
 
     cog = towers.CogWheel()
     cog.set_pos((0,4), map)
     map.towers.add(cog)
     Foreground.add(cog)
 
-    for i in range(10):
-        test = enemies.BusinessDwarf(Foreground = Foreground, speed = random.uniform(2, 3))
-        test.spawn(map, random.randint(0,7))
-        Foreground.add(test)
-        map.enemies.add(test)
+
+
+    # for i in range(10):
+    #     test = enemies.BusinessDwarf(Foreground = Foreground, speed = random.uniform(2, 3))
+    #     test.spawn(map, random.randint(0,7))
+    #     Foreground.add(test)
+    #     map.enemies.add(test)
 
     # for i in range(8):
     #     cog = towers.CogWheel()
@@ -96,6 +100,8 @@ def main():
 
     while True:
         clock.tick(60)
+        frame += 1
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 #profiler.print_stats(sort='tottime')

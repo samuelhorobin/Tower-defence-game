@@ -37,6 +37,7 @@ class SpriteAI(pygame.sprite.Sprite):
         self.isNextToTowerVar = False
 
         self.spawnIter = 0
+        self.spawning = False
         self.spawned = False
         self.goals = pygame.sprite.Group()
         self.journey = []
@@ -51,6 +52,9 @@ class SpriteAI(pygame.sprite.Sprite):
         self.accY = self.accX = 0 #Accumulated speeds for decimal movement
 
     def spawn(self, map, row):
+        self.spawning = True
+        self.spawnIter = 0
+
         self.gridPos = [len(map.tileGrid[row]) - 1, row]
 
         posX = map.pos[0] + len(map.tileGrid[row]) * 32 * settings.UPSCALE
@@ -158,20 +162,23 @@ class SpriteAI(pygame.sprite.Sprite):
         if direction == (-1, 0): self.hitbox.right = targetTower.hitbox.left
         if direction == (0, -1): self.hitbox.top = targetTower.hitbox.bottom
 
-
-
-        
-
     def move(self, map) -> None:
         self.goals.update()
         self.movement = (0,0)
 
-        if self.spawnIter < 0.7 and self.spawned == True:
-            deltaX = logistic_function(self.spawnIter, differentiated = True) * -1.2 * self.speed
-            self.hitbox.move_ip(deltaX, 0)
-            self.spawnIter += 0.01 * self.speed
+        if self.spawning == True:
+            deltaX = logistic_function(self.spawnIter, differentiated = True) * 2 * self.speed
+            print(deltaX)
+            self.spawnIter += 0.01
+            self.hitbox.move_ip(-abs(deltaX), 0)
 
-        if self.spawnIter > 0.5 and len(self.journey) > 0:
+            if abs(self.speed) < abs(deltaX):
+                self.spawning = False
+                self.spawned = True
+
+            self.movement = (-1, 0)
+
+        if self.spawned == True and len(self.journey) > 0:
             destX = self.journey[0][0]
             destY = self.journey[0][1]
 
