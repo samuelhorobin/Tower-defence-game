@@ -102,14 +102,18 @@ class SpriteAI(pygame.sprite.Sprite):
         self.gridPos = tile.gridPos
     
     def get_closest_tile(self, map):
-        closestTile = None
+        for tile in map.tiles:
+            if tile.rect.collidepoint(self.hitbox.center):
+                return tile # Faster method
+
+        closestTile = None # Backup
         closestDist = None
         for tile in map.tiles:
             if closestTile == None: closestTile = tile
             
             deltaY = self.hitbox.midbottom[0] - tile.rect.midbottom[0]
             deltaX = self.hitbox.midbottom[1] - tile.rect.midbottom[1]
-            distance = (deltaY**2 + deltaX**2)**(1/2)
+            distance = (deltaY**2 + deltaX**2)
 
             if closestDist == None: closestDist = distance
 
@@ -233,7 +237,7 @@ class BusinessDwarf(SpriteAI):
 
         self.image = self.idleS[0][0]
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
-        self.heightOffset += 3 * settings.UPSCALE
+        self.heightOffset = -3 * settings.UPSCALE
 
 
         
@@ -262,7 +266,7 @@ class BusinessDwarf(SpriteAI):
 
 
 
-    def update(self, map, screen, Foreground):
+    def update(self, screen, map, Foreground):
         self.move(map)
         self.draw(screen)
         self.next_move(map)

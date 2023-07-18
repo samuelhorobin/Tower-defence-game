@@ -92,14 +92,19 @@ class CogWheel(TowerAI):
 
                 if self.idleFrame == self.idleFrameCount: self.idleFrame = 0
 
-    def update(self, screen, map):
+    def update(self, screen, map, foreGround):
         self.draw(screen)
         
         if self.idleFrame == 5:
-            self.attack(screen, map)
+            self.attack(screen, map, foreGround)
 
 
-    def attack(self, screen, map):
+    def attack(self, screen, map, foreGround):
         self.attackBox.midleft = self.hitbox.midright
-        #pygame.draw.rect(screen, (255,50,50), self.attackBox)
+        for enemy in map.enemies:
+            if self.attackBox.colliderect(enemy.hitbox):
+                enemy.damage(300, foreGround)
+
+
+        #pygame.draw.rect(screen, (255,250,50), self.attackBox)
         
