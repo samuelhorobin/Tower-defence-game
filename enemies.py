@@ -168,7 +168,6 @@ class SpriteAI(pygame.sprite.Sprite):
 
         if self.spawning == True:
             deltaX = logistic_function(self.spawnIter, differentiated = True) * 2 * self.speed
-            print(deltaX)
             self.spawnIter += 0.01
             self.hitbox.move_ip(-abs(deltaX), 0)
 
@@ -230,7 +229,7 @@ class SpriteAI(pygame.sprite.Sprite):
 
 
 class BusinessDwarf(SpriteAI):
-    def __init__(self, Foreground, speed = 1):
+    def __init__(self, speed = 1):
         super().__init__(speed=speed)
         self.animationClock = self.idleFrame = self.walkFrame = 0
         self.facing = "West"
@@ -268,22 +267,17 @@ class BusinessDwarf(SpriteAI):
                 self.collide(selfCollisionDir, targetTower)
                 self.attacking = True
                 self.journey = []
-            
 
-
-
-
-    def update(self, screen, map, Foreground):
+    def update(self, map):
         self.move(map)
-        self.draw(screen)
         self.next_move(map)
 
-    def damage(self, dmg, Foreground):
+    def damage(self, dmg, foreground):
         for i in range(dmg):
-            Foreground.add(particles.Rectparticle(self.rect.center))
+            foreground.add(particles.Rectparticle(self.rect.center))
         self.health -= dmg
         if self.health <= 0:
-            for i in range(100): Foreground.add(particles.Rectparticle(self.rect.center))
+            for i in range(100): foreground.add(particles.Rectparticle(self.rect.center))
             self.kill()
 
     def draw(self, screen):

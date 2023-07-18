@@ -1,4 +1,3 @@
-''' LESSON 1: Tile-based map using sprites '''
 # Libraries
 import pygame
 import os
@@ -21,14 +20,6 @@ import map as mp
 
 
 
-def respond(eventKey):
-    ''' Requires event.key as input'''
-    if eventKey == keybinds.fullscreen:
-        SCREEN = pygame.display.set_mode(settings.RESOLUTION)
-
-
-
-
 # Classes
 class BlitSort:
     def __init__(self) -> None:
@@ -41,23 +32,11 @@ class BlitSort:
         sortedSprites = sorted(self.list.sprites(), key=lambda sprite: sprite.rect.bottom)
         self.list = pygame.sprite.Group(sortedSprites)
 
-    def update(self, screen, map, Foreground, Background):
+    def draw(self, screen):
         self.sort()
         for sprite in self.list:
-            if     sprite.__class__.__name__ == "BusinessDwarf" \
-                or sprite.__class__.__name__ == "CogWheel":
-                sprite.update(screen, map, Foreground)
-
-            elif   sprite.__class__.__name__ == "Rectparticle" \
-                or sprite.__class__.__name__ == "ElixirParticle" \
-                or sprite.__class__.__name__ == "Tile":
-                sprite.update(screen)
-
-            else:
-                sprite.update()
-
-
-
+            sprite.draw(screen)
+            
 
 def main():
     pygame.display.set_caption("Game")
@@ -65,36 +44,34 @@ def main():
 
     frame = 0
 
-    Foreground = BlitSort()
+    foreground = BlitSort()
 
     map = mp.MapManager()
-    map.load(Foreground, "testMap3")
-    map.setpos(tools.allign(map.size), Foreground)
+    map.load(foreground, "testMap3")
+    map.setpos(tools.allign(map.size), foreground)
     map.load_pathing()
     
-    subject = enemies.BusinessDwarf(Foreground = Foreground, speed = 2)
+    subject = enemies.BusinessDwarf(speed = 2)
     subject.spawn(map, 3)
-    Foreground.add(subject)
+    foreground.add(subject)
     map.enemies.add(subject)
 
-    cog = towers.CogWheel()
-    cog.set_pos((0,4), map)
-    map.towers.add(cog)
-    Foreground.add(cog)
-
-
+    # cog = towers.CogWheel()
+    # cog.set_pos((0,4), map)
+    # map.towers.add(cog)
+    # foreground.add(cog)
 
     # for i in range(10):
-    #     test = enemies.BusinessDwarf(Foreground = Foreground, speed = random.uniform(2, 3))
+    #     test = enemies.BusinessDwarf(foreground = foreground, speed = random.uniform(2, 3))
     #     test.spawn(map, random.randint(0,7))
-    #     Foreground.add(test)
+    #     foreground.add(test)
     #     map.enemies.add(test)
 
-    # for i in range(8):
-    #     cog = towers.CogWheel()
-    #     cog.set_pos((0,i), map)
-    #     map.towers.add(cog)
-    #     Foreground.add(cog)
+    for i in range(8):
+        cog = towers.CogWheel()
+        cog.set_pos((0,i), map)
+        map.towers.add(cog)
+        foreground.add(cog)
 
     
 
@@ -112,10 +89,21 @@ def main():
         
         SCREEN.fill((0,0,0))
 
-        map.update(SCREEN)
-        Foreground.update(SCREEN, map, Foreground, map)
+        
+        map.enemies.update(map)
+        map.towers.update(map, foreground)
+
+        map.draw(SCREEN)
+        foreground.draw(SCREEN)
 
         pygame.display.update()
+        
+
+        # if frame % 15 == 0:
+        #     test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
+        #     test.spawn(map, random.randint(0,7))
+        #     foreground.add(test)
+        #     map.enemies.add(test)
 
 
 if __name__ == "__main__":

@@ -9,9 +9,9 @@ from enum import Enum
 cogWheelAnimations = animations.cogwheel()
 
 for animation in cogWheelAnimations:
-            for frame in range(len(animation)):
-                animation[frame][0] = tools.extrapolateImage(animation[frame][0], (0,0), rect = False)
-
+    for frame in range(len(animation)):
+        animation[frame][0] = tools.extrapolateImage(
+            animation[frame][0], (0, 0), rect=False)
 
 
 class TowerAI(pygame.sprite.Sprite):
@@ -30,8 +30,9 @@ class TowerAI(pygame.sprite.Sprite):
         self.speed = 1
 
         self.image = self.idleE[0][0]
-        self.rect = pygame.FRect((0,0), (self.image.get_size()))
-        self.hitbox = pygame.FRect((0,0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
+        self.rect = pygame.FRect((0, 0), (self.image.get_size()))
+        self.hitbox = pygame.FRect(
+            (0, 0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
         self.gridPos = None
 
         self.state = "idle"
@@ -43,9 +44,9 @@ class TowerAI(pygame.sprite.Sprite):
 
         left = map.pos[0] + (coords[0] * 32 * settings.UPSCALE)
         top = map.pos[1] + (coords[1] * 16 * settings.UPSCALE)
-        tileRect = pygame.Rect((left, top), (32*settings.UPSCALE, 16*settings.UPSCALE))
+        tileRect = pygame.Rect(
+            (left, top), (32*settings.UPSCALE, 16*settings.UPSCALE))
         self.rect.midbottom = self.hitbox.midbottom = tileRect.midbottom
-        
 
     def draw(self, screen):
         dt = 1/60
@@ -53,21 +54,22 @@ class TowerAI(pygame.sprite.Sprite):
 
         if self.state == "idle":
             screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
-     
+
             if self.animationClock >= self.secondsPerFrame:
                 self.idleFrame += 1
                 self.animationClock = 0
 
-                if self.idleFrame == self.idleFrameCount: self.idleFrame = 0
+                if self.idleFrame == self.idleFrameCount:
+                    self.idleFrame = 0
 
-    def damage(self, dmg, Foreground):
+    def damage(self, dmg, foreground):
         for i in range(dmg):
-            Foreground.add(particles.ElixirParticle(self.rect.center))
+            foreground.add(particles.ElixirParticle(self.rect.center))
         self.health -= dmg
         if self.health <= 0:
-            for _ in range(100): Foreground.add(particles.ElixirParticle(self.rect.center))
+            for _ in range(100):
+                foreground.add(particles.ElixirParticle(self.rect.center))
             self.kill()
-
 
 
 class CogWheel(TowerAI):
@@ -77,7 +79,8 @@ class CogWheel(TowerAI):
         self.idleFrameCount = 6
         self.idleE, self.idleW = cogWheelAnimations
 
-        self.attackBox = pygame.Rect((0,0), (8*settings.UPSCALE, 16*settings.UPSCALE))
+        self.attackBox = pygame.Rect(
+            (0, 0), (8*settings.UPSCALE, 16*settings.UPSCALE))
 
     def draw(self, screen):
         self.dt = 1/60
@@ -85,26 +88,22 @@ class CogWheel(TowerAI):
 
         if self.state == "idle":
             screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
-     
+
             if self.animationClock >= self.secondsPerFrame:
                 self.idleFrame += 1
                 self.animationClock = 0
 
-                if self.idleFrame == self.idleFrameCount: self.idleFrame = 0
+                if self.idleFrame == self.idleFrameCount:
+                    self.idleFrame = 0
 
-    def update(self, screen, map, foreGround):
-        self.draw(screen)
-        
+    def update(self, map, foreground):
         if self.idleFrame == 4 and self.animationClock == 0 + self.dt * self.speed:
-            self.attack(screen, map, foreGround)
+            self.attack(map, foreground)
 
-
-    def attack(self, screen, map, foreGround):
+    def attack(self, map, foreground):
         self.attackBox.midleft = self.hitbox.midright
         for enemy in map.enemies:
             if self.attackBox.colliderect(enemy.hitbox):
-                enemy.damage(20, foreGround)
+                enemy.damage(10, foreground)
 
-
-        #pygame.draw.rect(screen, (255,250,50), self.attackBox)
-        
+        # pygame.draw.rect(screen, (255,250,50), self.attackBox)
