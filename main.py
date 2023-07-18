@@ -75,22 +75,22 @@ def main():
     # Foreground.add(subject)
     # map.enemies.add(subject)
 
-    # cog = towers.CogWheel()
-    # cog.set_pos((0,0), map)
-    # map.towers.add(cog)
-    # Foreground.add(cog)
+    cog = towers.CogWheel()
+    cog.set_pos((0,4), map)
+    map.towers.add(cog)
+    Foreground.add(cog)
 
-    for i in range(100):
+    for i in range(10):
         test = enemies.BusinessDwarf(Foreground = Foreground, speed = random.uniform(2, 3))
         test.spawn(map, random.randint(0,7))
         Foreground.add(test)
         map.enemies.add(test)
 
-    for i in range(8):
-        cog = towers.CogWheel()
-        cog.set_pos((0,i), map)
-        map.towers.add(cog)
-        Foreground.add(cog)
+    # for i in range(8):
+    #     cog = towers.CogWheel()
+    #     cog.set_pos((0,i), map)
+    #     map.towers.add(cog)
+    #     Foreground.add(cog)
 
     
 
@@ -98,7 +98,7 @@ def main():
         clock.tick(60)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                profiler.print_stats(sort='tottime')
+                #profiler.print_stats(sort='tottime')
                 pygame.quit()
                 raise SystemExit
             elif event.type == pygame.KEYDOWN:

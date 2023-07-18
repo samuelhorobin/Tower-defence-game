@@ -228,7 +228,7 @@ class BusinessDwarf(SpriteAI):
         self.animationClock = self.idleFrame = self.walkFrame = 0
         self.facing = "West"
         self.secondsPerFrame = 0.2
-        self.health = 700
+        self.health = 100
         
         self.walkS, self.walkSW, self.walkW, self.walkNW, \
         self.walkN, self.walkNE, self.walkE, self.walkSE, \
