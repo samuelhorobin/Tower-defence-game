@@ -273,11 +273,18 @@ class BusinessDwarf(SpriteAI):
         self.next_move(map)
 
     def damage(self, dmg, foreground):
-        for i in range(dmg):
-            foreground.add(particles.Rectparticle(self.rect.center))
         self.health -= dmg
+
+        for i in range(dmg):
+            particle = particles.Rectparticle(self.rect.center)
+            foreground.add(particle)
+            particles.VFX_Manager.add(particle)
+
         if self.health <= 0:
-            for i in range(100): foreground.add(particles.Rectparticle(self.rect.center))
+            for i in range(50):
+                particle = particles.FleshParticle(self.rect.center)
+                foreground.add(particle)
+                particles.VFX_Manager.add(particle)
             self.kill()
 
     def draw(self, screen):

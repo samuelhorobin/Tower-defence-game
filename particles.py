@@ -6,28 +6,44 @@ import math
 
 
 class VFX_Manager:
-    def __init__(self):
-        self.rectParticles = pygame.sprite.Group()
+    rectParticles = pygame.sprite.Group()
 
     @staticmethod
-    def update_rectparticle(self):
-        for rp in self.rectParticles:
+    def add(particle):
+        if isinstance(particle, Rectparticle):
+            VFX_Manager.rectParticles.add(particle)
+            #print(len(VFX_Manager.rectParticles))
+
+    @staticmethod
+    def update():
+        VFX_Manager.update_rectparticle()
+
+    @staticmethod
+    def update_rectparticle():
+        for rp in VFX_Manager.rectParticles:
             rp.time += 1
             if rp.time >= rp.lifespan:
                 rp.kill()
 
-            if rp.rect.bottom > rp.floor:
-                rp.yComp = 0
-                rp.yGrav = 0
-                rp.rect.bottom = rp.floor
+            if not rp.settled:
+                if rp.rect.bottom > rp.floor:
+                    rp.yComp = 0
+                    rp.yGrav = 0
+                    rp.rect.bottom = rp.floor
 
-            rp.rect.x += rp.xComp
-            rp.rect.y += rp.yComp
+                rp.rect.x += rp.xComp
+                rp.rect.y += rp.yComp
 
-            rp.xComp *= (1 - rp.xRes)
-            if abs(rp.xComp) < 0.5:
-                rp.xComp = 0
-            rp.yComp += rp.yGrav
+                rp.xComp *= (1 - rp.xRes)
+                if abs(rp.xComp) < 0.5:
+                    rp.xComp = 0
+
+                if rp.xComp == 0 and rp.yComp == 0:
+                    rp.settled == True
+
+                rp.yComp += rp.yGrav
+        
+
 
 
 class Rectparticle(pygame.sprite.Sprite):
@@ -43,8 +59,8 @@ class Rectparticle(pygame.sprite.Sprite):
         self.lifespanB = 2  # Base
         self.lifespanV = random.uniform(-1, 1)  # Variance
         self.lifespan = (self.lifespanB + self.lifespanV) * 60
-        print(self.lifespan)
         self.time = 0
+        self.settled = False
 
         self.angle = random.randint(0, 180)
         self.strength = random.randint(5, 10)
@@ -66,4 +82,15 @@ class ElixirParticle(Rectparticle):
         super().__init__(pos)
         self.width = self.height = random.randint(2, 3) * 5
         self.rgb = (66, random.randint(0, 70), 144)
-        self.rect = pygame.FRect(pos, (self.width, self.height))
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.rgb)
+        self.rect = self.image.get_frect(topleft=pos)
+
+class FleshParticle(Rectparticle):
+    def __init__(self, pos):
+        super().__init__(pos)
+        self.width = self.height = random.randint(3, 4) * 5
+        self.rgb = (random.randint(125, 225), 40, 61)
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.rgb)
+        self.rect = self.image.get_frect(topleft=pos)

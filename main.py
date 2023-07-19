@@ -16,6 +16,7 @@ import keybinds
 import enemies
 import tools
 import towers
+import particles
 import map as mp
 
 
@@ -81,7 +82,7 @@ def main():
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                #profiler.print_stats(sort='tottime')
+                profiler.print_stats(sort='tottime')
                 pygame.quit()
                 raise SystemExit
             elif event.type == pygame.KEYDOWN:
@@ -92,18 +93,21 @@ def main():
         
         map.enemies.update(map)
         map.towers.update(map, foreground)
+        particles.VFX_Manager.update()
 
         map.draw(SCREEN)
         foreground.draw(SCREEN)
+        
+        
 
         pygame.display.update()
         
 
-        # if frame % 15 == 0:
-        #     test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
-        #     test.spawn(map, random.randint(0,7))
-        #     foreground.add(test)
-        #     map.enemies.add(test)
+        if frame % 15 == 0:
+            test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
+            test.spawn(map, random.randint(0,7))
+            foreground.add(test)
+            map.enemies.add(test)
 
 
 if __name__ == "__main__":
