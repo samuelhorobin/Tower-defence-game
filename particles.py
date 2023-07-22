@@ -27,21 +27,20 @@ class VFX_Manager:
 
             if not rp.settled:
                 if rp.rect.bottom > rp.floor:
-                    rp.yComp = 0
+                    rp.vector.y = 0
                     rp.yGrav = 0
                     rp.rect.bottom = rp.floor
 
-                rp.rect.x += rp.xComp
-                rp.rect.y += rp.yComp
+                rp.rect.move_ip(rp.vector)
 
-                rp.xComp *= (1 - rp.xRes)
-                if abs(rp.xComp) < 0.5:
-                    rp.xComp = 0
+                rp.vector.x *= (1 - rp.xRes)
+                if abs(rp.vector.x) < 0.5:
+                    rp.vector.x = 0
 
-                if rp.xComp == 0 and rp.yComp == 0:
+                if rp.vector.x == 0 and rp.vector.y == 0:
                     rp.settled == True
 
-                rp.yComp += rp.yGrav
+                rp.vector.y += rp.yGrav
         
 
 
@@ -49,29 +48,37 @@ class VFX_Manager:
 class Rectparticle(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
+        self.pos = pos
+
         self.width = self.height = random.randint(1, 2) * 5
         self.rgb = (random.randint(150, 200), 61, 61)
 
-        self.image = pygame.Surface((self.width, self.height))
-        self.image.fill(self.rgb)
-        self.rect = self.image.get_frect(topleft=pos)
-
         self.lifespanB = 2  # Base
         self.lifespanV = random.uniform(-1, 1)  # Variance
-        self.lifespan = (self.lifespanB + self.lifespanV) * 60
-        self.time = 0
-        self.settled = False
 
         self.angle = random.randint(0, 180)
         self.strength = random.randint(5, 10)
-        self.xComp = math.cos(self.angle) * self.strength
-        self.yComp = math.sin(self.angle) * self.strength * -1
 
         self.xRes = 0.1
         self.yGrav = 1
+        
+        
+    def load(self):
+        self.time = 0
+        self.settled = False
+
+        self.vector = pygame.Vector2(self.strength, self.strength * -1)
+        self.vector.rotate_ip(self.angle)
+
+        self.lifespan = (self.lifespanB + self.lifespanV) * 60
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.rgb)
+        self.rect = self.image.get_frect(topleft=self.pos)
 
         self.floor = self.rect.bottom + \
             random.randint(4, 11) * settings.UPSCALE
+
 
     def draw(self, screen):
         screen.blit(self.image, self.rect.topleft)

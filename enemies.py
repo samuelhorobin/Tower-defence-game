@@ -277,12 +277,14 @@ class BusinessDwarf(SpriteAI):
 
         for i in range(dmg):
             particle = particles.Rectparticle(self.rect.center)
+            particle.load()
             foreground.add(particle)
             particles.VFX_Manager.add(particle)
 
         if self.health <= 0:
-            for i in range(50):
+            for i in range(20):
                 particle = particles.FleshParticle(self.rect.center)
+                particle.load()
                 foreground.add(particle)
                 particles.VFX_Manager.add(particle)
             self.kill()
