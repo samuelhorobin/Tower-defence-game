@@ -31,15 +31,17 @@ class VFX_Manager:
                 if abs(rp.vector.x) < 0.5:
                     rp.vector.x = 0
 
+                rp.rect.move_ip(rp.vector)
+
                 if rp.rect.bottom > rp.floor:
                     rp.vector.y = 0
                     rp.yGrav = 0
                     rp.rect.bottom = rp.floor
 
-                rp.rect.move_ip(rp.vector)
-
                 if rp.vector.x == 0 and rp.vector.y == 0:
                     rp.settled = True
+
+                
                 
 
             

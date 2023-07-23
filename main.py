@@ -68,11 +68,11 @@ def main():
     #     foreground.add(test)
     #     map.enemies.add(test)
 
-    # for i in range(8):
-    #     cog = towers.CogWheel()
-    #     cog.set_pos((0,i), map)
-    #     map.towers.add(cog)
-    #     foreground.add(cog)
+    for i in range(8):
+        cog = towers.CogWheel()
+        cog.set_pos((0,i), map)
+        map.towers.add(cog)
+        foreground.add(cog)
 
     
 
@@ -103,11 +103,11 @@ def main():
         pygame.display.update()
         
 
-        # if frame % 5 == 0:
-        #     test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
-        #     test.spawn(map, random.randint(0,7))
-        #     foreground.add(test)
-        #     map.enemies.add(test)
+        if frame % 5 == 0:
+            test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
+            test.spawn(map, random.randint(0,7))
+            foreground.add(test)
+            map.enemies.add(test)
 
 
 if __name__ == "__main__":
