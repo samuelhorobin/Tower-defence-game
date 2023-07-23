@@ -52,15 +52,15 @@ def main():
     map.setpos(tools.allign(map.size), foreground)
     map.load_pathing()
     
-    subject = enemies.BusinessDwarf(speed = 2)
+    subject = enemies.BusinessDwarf(speed = 5)
     subject.spawn(map, 3)
     foreground.add(subject)
     map.enemies.add(subject)
 
-    # cog = towers.CogWheel()
-    # cog.set_pos((0,4), map)
-    # map.towers.add(cog)
-    # foreground.add(cog)
+    cog = towers.CogWheel()
+    cog.set_pos((0,4), map)
+    map.towers.add(cog)
+    foreground.add(cog)
 
     # for i in range(10):
     #     test = enemies.BusinessDwarf(foreground = foreground, speed = random.uniform(2, 3))
@@ -68,16 +68,16 @@ def main():
     #     foreground.add(test)
     #     map.enemies.add(test)
 
-    for i in range(8):
-        cog = towers.CogWheel()
-        cog.set_pos((0,i), map)
-        map.towers.add(cog)
-        foreground.add(cog)
+    # for i in range(8):
+    #     cog = towers.CogWheel()
+    #     cog.set_pos((0,i), map)
+    #     map.towers.add(cog)
+    #     foreground.add(cog)
 
     
 
     while True:
-        clock.tick(60)
+        dt = clock.tick(settings.FPS) / 1000
         frame += 1
         
         for event in pygame.event.get():
@@ -93,7 +93,7 @@ def main():
         
         map.enemies.update(map)
         map.towers.update(map, foreground)
-        particles.VFX_Manager.update()
+        particles.VFX_Manager.update(dt)
 
         map.draw(SCREEN)
         foreground.draw(SCREEN)
@@ -103,11 +103,11 @@ def main():
         pygame.display.update()
         
 
-        if frame % 15 == 0:
-            test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
-            test.spawn(map, random.randint(0,7))
-            foreground.add(test)
-            map.enemies.add(test)
+        # if frame % 5 == 0:
+        #     test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
+        #     test.spawn(map, random.randint(0,7))
+        #     foreground.add(test)
+        #     map.enemies.add(test)
 
 
 if __name__ == "__main__":

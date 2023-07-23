@@ -248,21 +248,21 @@ class BusinessDwarf(SpriteAI):
 
         
 
-    def next_move(self, map):
-        if len(self.journey) == 0 and not self.next_to_tower(map):
+    def next_move(self, map):     
+        if len(self.journey) == 0 and not self.isNextToTowerVar:
             self.find_tower(map)
             self.adjust_to_tower(map)
 
-        if self.next_to_tower(map):
+        if self.isNextToTowerVar:
             targetTower = tools.get_tile(map, self.gridTarget, layer = "towers")
             if targetTower != None:
                 selfCollisionDir = self.touching_tower(map, tower = targetTower)
 
-        if len(self.journey) == 0 and self.next_to_tower(map) and not self.attacking:
+        if len(self.journey) == 0 and self.isNextToTowerVar and not self.attacking:
             if selfCollisionDir == None:
                 self.go_to(map, targetTower.gridPos)
 
-        if len(self.journey) != 0 and self.next_to_tower(map):
+        if len(self.journey) != 0 and self.isNextToTowerVar:
             if selfCollisionDir != None:
                 self.collide(selfCollisionDir, targetTower)
                 self.attacking = True
@@ -272,22 +272,27 @@ class BusinessDwarf(SpriteAI):
         self.move(map)
         self.next_move(map)
 
-    def damage(self, dmg, foreground):
+    def damage(self, dmg, foreground, angle = 0):
         self.health -= dmg
 
-        for i in range(dmg):
-            particle = particles.Rectparticle(self.rect.center)
-            particle.load()
-            foreground.add(particle)
-            particles.VFX_Manager.add(particle)
-
         if self.health <= 0:
-            for i in range(20):
+            for i in range(40):
                 particle = particles.FleshParticle(self.rect.center)
+                particle.angle += angle
                 particle.load()
                 foreground.add(particle)
                 particles.VFX_Manager.add(particle)
             self.kill()
+
+        if self.health > 0:
+            for i in range(dmg):
+                particle = particles.Rectparticle(self.rect.center)
+                particle.angle += angle
+                particle.load()
+                foreground.add(particle)
+                particles.VFX_Manager.add(particle)
+
+        
 
     def draw(self, screen):
         self.rect.midbottom = self.hitbox.midbottom
