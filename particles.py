@@ -6,13 +6,38 @@ import math
 import cProfile
 
 
+class RectParticleCache:
+    def __init__(self):
+        self.cache = {}
+
+    def get_cached_particle(self, *key):
+        ''' Key format: width, colour'''
+        if key in self.cache:
+            return self.cache[key]
+        else:
+            image = self.create_particle(key)
+            self.cache[key] = image
+            return image
+
+    def create_particle(self, key):
+        width = height = key[0]
+        rgb = key[1]
+
+        image = pygame.Surface((width, height))
+        image.fill(rgb)
+
+        return image
+
+
 class VFX_Manager:
     rectParticles = pygame.sprite.Group()
+    rectCache = RectParticleCache()
 
     @staticmethod
     def add(particle):
         if isinstance(particle, Rectparticle):
             VFX_Manager.rectParticles.add(particle)
+            print(len(VFX_Manager.rectParticles))
 
     @staticmethod
     def update(dt):
@@ -41,11 +66,6 @@ class VFX_Manager:
                 if rp.vector.x == 0 and rp.vector.y == 0:
                     rp.settled = True
 
-                
-                
-
-            
-
 class Rectparticle(pygame.sprite.Sprite):
     def __init__(self, pos):
         super().__init__()
@@ -73,8 +93,8 @@ class Rectparticle(pygame.sprite.Sprite):
 
         self.lifespan = (self.lifespanB + self.lifespanV)
 
-        self.image = pygame.Surface((self.width, self.height))
-        self.image.fill(self.rgb)
+        self.image = VFX_Manager.rectCache.get_cached_particle(self.width, self.rgb)
+
         self.rect = self.image.get_frect(topleft=self.pos)
 
         self.floor = self.rect.bottom + \
@@ -102,3 +122,4 @@ class FleshParticle(Rectparticle):
         self.image = pygame.Surface((self.width, self.height))
         self.image.fill(self.rgb)
         self.rect = self.image.get_frect(topleft=pos)
+
