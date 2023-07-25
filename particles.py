@@ -2,9 +2,16 @@ import pygame
 import random
 import settings
 import numpy as np
+import animations
+import tools
 import math
 import cProfile
 
+skullSpin = animations.skull()
+
+
+for frame in range(len(skullSpin)):
+    skullSpin[frame][0] = tools.extrapolateImage(skullSpin[frame][0], (0,0), rect = False)
 
 class RectParticleCache:
     def __init__(self):
@@ -28,24 +35,13 @@ class RectParticleCache:
 
         return image
 
-
-class VFX_Manager:
-    rectParticles = pygame.sprite.Group()
-    rectCache = RectParticleCache()
-
-    @staticmethod
-    def add(particle):
-        if isinstance(particle, Rectparticle):
-            VFX_Manager.rectParticles.add(particle)
-            print(len(VFX_Manager.rectParticles))
+class RectParticle_Manager:
+    particles = pygame.sprite.Group()
+    cache = RectParticleCache()
 
     @staticmethod
     def update(dt):
-        VFX_Manager.update_rectparticle(dt)
-
-    @staticmethod
-    def update_rectparticle(dt):
-        for rp in VFX_Manager.rectParticles:
+        for rp in RectParticle_Manager.particles:
             rp.time += dt
             if rp.time >= rp.lifespan:
                 rp.kill()
@@ -65,6 +61,68 @@ class VFX_Manager:
 
                 if rp.vector.x == 0 and rp.vector.y == 0:
                     rp.settled = True
+
+class SkullParticle_Manager:
+    particles = pygame.sprite.Group()
+
+    @staticmethod
+    def update(dt):
+        for p in SkullParticle_Manager.particles:
+            p.time += dt
+            if p.time >= p.lifespan:
+                p.kill()
+
+            if not p.settled:
+                if p.rect.bottom > p.floor:
+                    SkullParticle_Manager.bounce(p)
+
+                p.vector.y += p.yGrav
+                p.rect.move_ip(p.vector)
+        
+                p.animationClock += dt * p.spinSpeed
+                if p.animationClock > 0.05:
+                    p.animationClock = 0
+                    p.frame += 1
+                    if p.frame == 8: p.frame = 0
+
+
+    @staticmethod
+    def bounce(p):
+        if not p.settled:
+            p.vector.y *= -0.5
+
+            if p.vector.y < 0 and p.vector.y > -0.5:
+                p.vector.y = 0
+                p.settled = True
+
+class Skull(pygame.sprite.Sprite):
+    def __init__(self, sprite):
+        super().__init__()
+        self.frame = 0
+        self.animationClock = 0
+        self.time = 0
+        self.lifespan = 5
+        self.settled = False
+
+        self.strength = abs(sprite.health) / 2
+
+        self.spinSpeed = random.uniform(0.4, 1)
+        self.xRes = 0.1
+        self.yGrav = 1
+        self.angle = random.randint(-10, 10)
+
+        self.vector = pygame.Vector2(0, self.strength * -1)
+        self.vector.rotate_ip(self.angle)
+
+        self.animation = skullSpin
+        self.rect = self.airRect = self.animation[0][0].get_frect(midtop=sprite.rect.midtop)
+        
+        self.floor = sprite.rect.bottom + random.randint(-1, 1) * settings.UPSCALE
+
+    def draw(self, screen):
+        screen.blit(self.animation[self.frame][0], self.airRect.topleft)
+
+        
 
 class Rectparticle(pygame.sprite.Sprite):
     def __init__(self, pos):
@@ -93,12 +151,11 @@ class Rectparticle(pygame.sprite.Sprite):
 
         self.lifespan = (self.lifespanB + self.lifespanV)
 
-        self.image = VFX_Manager.rectCache.get_cached_particle(self.width, self.rgb)
+        self.image = RectParticle_Manager.cache.get_cached_particle(self.width, self.rgb)
 
         self.rect = self.image.get_frect(topleft=self.pos)
 
-        self.floor = self.rect.bottom + \
-            random.randint(4, 11) * settings.UPSCALE
+        self.floor = self.rect.bottom + random.randint(4, 11) * settings.UPSCALE
 
 
     def draw(self, screen):

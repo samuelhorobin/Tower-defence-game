@@ -281,7 +281,12 @@ class BusinessDwarf(SpriteAI):
                 particle.angle += angle
                 particle.load()
                 foreground.add(particle)
-                particles.VFX_Manager.add(particle)
+                particles.RectParticle_Manager.particles.add(particle)
+
+            skull = particles.Skull(self)
+            particles.SkullParticle_Manager.particles.add(skull)
+            foreground.add(skull)
+            
             self.kill()
 
         if self.health > 0:
@@ -290,7 +295,7 @@ class BusinessDwarf(SpriteAI):
                 particle.angle += angle
                 particle.load()
                 foreground.add(particle)
-                particles.VFX_Manager.add(particle)
+                particles.RectParticle_Manager.particles.add(particle)
 
         
 

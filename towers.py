@@ -104,6 +104,6 @@ class CogWheel(TowerAI):
         self.attackBox.midleft = self.hitbox.midright
         for enemy in map.enemies:
             if self.attackBox.colliderect(enemy.hitbox):
-                enemy.damage(20, foreground, angle = -90)
+                enemy.damage(150, foreground, angle = -90)
 
         # pygame.draw.rect(screen, (255,250,50), self.attackBox)

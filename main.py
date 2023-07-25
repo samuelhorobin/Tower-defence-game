@@ -82,7 +82,7 @@ def main():
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                profiler.print_stats(sort='tottime')
+                #profiler.print_stats(sort='tottime')
                 pygame.quit()
                 raise SystemExit
             elif event.type == pygame.KEYDOWN:
@@ -93,7 +93,9 @@ def main():
         
         map.enemies.update(map)
         map.towers.update(map, foreground)
-        particles.VFX_Manager.update(dt)
+        
+        particles.RectParticle_Manager.update(dt)
+        particles.SkullParticle_Manager.update(dt)
 
         map.draw(SCREEN)
         foreground.draw(SCREEN)
@@ -103,7 +105,7 @@ def main():
         pygame.display.update()
         
 
-        if frame % 5 == 0:
+        if frame % 60 == 0:
             test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
             test.spawn(map, random.randint(0,7))
             foreground.add(test)

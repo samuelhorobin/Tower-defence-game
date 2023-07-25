@@ -27,3 +27,7 @@ def cogwheel():
     idleW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleE]
     
     return [idleE, idleW]
+
+def skull():
+    spin = tools.get_animation("Tower-defence-game/assets/particles/skull 8x8", "spin")
+    return spin
