@@ -73,11 +73,11 @@ class SkullParticle_Manager:
                 p.kill()
 
             if not p.settled:
-                if p.rect.bottom > p.floor:
+                if p.airRect.bottom > p.floor:
                     SkullParticle_Manager.bounce(p)
 
                 p.vector.y += p.yGrav
-                p.rect.move_ip(p.vector)
+                p.airRect.move_ip(p.vector)
         
                 p.animationClock += dt * p.spinSpeed
                 if p.animationClock > 0.05:
@@ -115,7 +115,9 @@ class Skull(pygame.sprite.Sprite):
         self.vector.rotate_ip(self.angle)
 
         self.animation = skullSpin
-        self.rect = self.airRect = self.animation[0][0].get_frect(midtop=sprite.rect.midtop)
+
+        self.rect = self.animation[0][0].get_frect(center=sprite.rect.center)
+        self.airRect = self.animation[0][0].get_frect(midtop=sprite.rect.midtop)
         
         self.floor = sprite.rect.bottom + random.randint(-1, 1) * settings.UPSCALE
 
