@@ -105,7 +105,7 @@ def main():
         pygame.display.update()
         
 
-        if frame % 60 == 0:
+        if frame % 20 == 0:
             test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
             test.spawn(map, random.randint(0,7))
             foreground.add(test)
