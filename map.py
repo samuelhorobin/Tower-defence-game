@@ -39,21 +39,21 @@ class MapManager:
         tileList = data["layers"][0]["data"]
         height = data["height"]
 
-        self.tileGrid = np.array_split(tileList, height)
-        self.towerGrid = [[0 for x in y] for y in self.tileGrid]
+        self.tile_grid = np.array_split(tileList, height)
+        self.towerGrid = [[0 for x in y] for y in self.tile_grid]
 
-        self.size = (len(self.tileGrid) * 32 * settings.UPSCALE,
-                     len(self.tileGrid[0]) * 16 * settings.UPSCALE)
+        self.size = (len(self.tile_grid) * 32 * settings.UPSCALE,
+                     len(self.tile_grid[0]) * 16 * settings.UPSCALE)
         self.load_tiles(upperLayer)
 
     def load_tiles(self, foreground):
         whitelist = [1, 2]
-        for i, y in enumerate(self.tileGrid):
+        for i, y in enumerate(self.tile_grid):
             for k, x in enumerate(y):
-                xOffset, yOffset = [self.pos[i] + val for i,
+                x_offset, y_offset = [self.pos[i] + val for i,
                                     val in enumerate(tools.calcOffset(x))]
-                pos = (xOffset + (k * 32 * settings.UPSCALE),
-                       yOffset + (i * 16 * settings.UPSCALE))
+                pos = (x_offset + (k * 32 * settings.UPSCALE),
+                       y_offset + (i * 16 * settings.UPSCALE))
                 tile = Tile(pos=pos, flavour=str(x), gridPos=(k, i))
 
                 if x in whitelist:
@@ -62,18 +62,18 @@ class MapManager:
                     foreground.add(tile)
 
     def load_pathing(self):
-        traversableWhitelist = [1, 2]
-        nodeGrid = [list(row) for row in self.tileGrid]
-        width = len(nodeGrid[0])
-        height = len(nodeGrid)
-        self.NodeManager = pathfinding.Grid(width, height)
+        traversable_whitelist = [1, 2]
+        node_grid = [list(row) for row in self.tile_grid]
+        width = len(node_grid[0])
+        height = len(node_grid)
+        self.node_manager = pathfinding.Grid(width, height)
 
-        for i, row in enumerate(nodeGrid):
+        for i, row in enumerate(node_grid):
             for k, x in enumerate(row):
-                if x in traversableWhitelist:
+                if x in traversable_whitelist:
                     pass
                 else:
-                    self.NodeManager.add_wall(i, k)
+                    self.node_manager.add_wall(i, k)
 
     def setpos(self, pos, upperLayer):
         self.pos = pos

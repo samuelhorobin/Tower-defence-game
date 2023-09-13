@@ -19,14 +19,14 @@ class TowerAI(pygame.sprite.Sprite):
         super().__init__()
         self.identifier = 0
 
-        self.animationClock = self.idleFrame = self.walkFrame = 0
+        self.animationClock = self.idle_frame = self.walkFrame = 0
         self.facing = "West"
         self.secondsPerFrame = 0.1
         self.health = 200
 
         self.idleE, self.idleW = cogWheelAnimations
         self.animation = self.idleE
-        self.idleFrameCount = 6
+        self.idle_frame_count = 6
         self.speed = 1
 
         self.image = self.idleE[0][0]
@@ -53,14 +53,14 @@ class TowerAI(pygame.sprite.Sprite):
         self.animationClock += dt * self.speed
 
         if self.state == "idle":
-            screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
+            screen.blit(self.animation[self.idle_frame][0], self.rect.topleft)
 
             if self.animationClock >= self.secondsPerFrame:
-                self.idleFrame += 1
+                self.idle_frame += 1
                 self.animationClock = 0
 
-                if self.idleFrame == self.idleFrameCount:
-                    self.idleFrame = 0
+                if self.idle_frame == self.idle_frame_count:
+                    self.idle_frame = 0
 
     def damage(self, dmg, foreground):
         for i in range(dmg):
@@ -79,31 +79,31 @@ class CogWheel(TowerAI):
         self.idleFrameCount = 6
         self.idleE, self.idleW = cogWheelAnimations
 
-        self.attackBox = pygame.Rect(
+        self.attack_box = pygame.Rect(
             (0, 0), (8*settings.UPSCALE, 16*settings.UPSCALE))
 
     def draw(self, screen):
         self.dt = 1/60
-        self.animationClock += self.dt * self.speed
+        self.animation_clock += self.dt * self.speed
 
         if self.state == "idle":
-            screen.blit(self.animation[self.idleFrame][0], self.rect.topleft)
+            screen.blit(self.animation[self.idle_frame][0], self.rect.topleft)
 
-            if self.animationClock >= self.secondsPerFrame:
-                self.idleFrame += 1
-                self.animationClock = 0
+            if self.animation_clock >= self.secondsPerFrame:
+                self.idle_frame += 1
+                self.animation_clock = 0
 
-                if self.idleFrame == self.idleFrameCount:
-                    self.idleFrame = 0
+                if self.idle_frame == self.idleFrameCount:
+                    self.idle_frame = 0
 
     def update(self, map, foreground):
-        if self.idleFrame == 4 and self.animationClock == 0 + self.dt * self.speed:
+        if self.idle_frame == 4 and self.animation_clock == 0 + self.dt * self.speed:
             self.attack(map, foreground)
 
     def attack(self, map, foreground):
-        self.attackBox.midleft = self.hitbox.midright
+        self.attack_box.midleft = self.hitbox.midright
         for enemy in map.enemies:
-            if self.attackBox.colliderect(enemy.hitbox):
+            if self.attack_box.colliderect(enemy.hitbox):
                 enemy.damage(50, foreground, angle = -90)
 
         # pygame.draw.rect(screen, (255,250,50), self.attackBox)
