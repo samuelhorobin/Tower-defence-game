@@ -4,9 +4,9 @@ import json
 import settings
 import numpy as np
 
-def get_animation(spritesheetDir, animation, spritesheetName = "spritesheet", dataName = "data", name = None):
-    spritePng = os.path.join(spritesheetDir, f"{spritesheetName}.png")
-    spriteJson = os.path.join(spritesheetDir, f"{dataName}.json")
+def get_animation(spritesheetDir, animation, spritesheet_name = "spritesheet", data_name = "data", name = None):
+    spritePng = os.path.join(spritesheetDir, f"{spritesheet_name}.png")
+    spriteJson = os.path.join(spritesheetDir, f"{data_name}.json")
 
     with open(spriteJson, "r") as file:
         data = json.load(file)
@@ -31,14 +31,14 @@ def get_animation(spritesheetDir, animation, spritesheetName = "spritesheet", da
     
 
 def extrapolateImage(rawImage, pos = None, float = False, rect = True):
-    newDimensions = (rawImage.get_width() * settings.UPSCALE, rawImage.get_height() * settings.UPSCALE)
+    new_dimensions = (rawImage.get_width() * settings.UPSCALE, rawImage.get_height() * settings.UPSCALE)
     if rect == False:
-        return pygame.transform.scale(rawImage, newDimensions).convert_alpha()
+        return pygame.transform.scale(rawImage, new_dimensions).convert_alpha()
     elif rect == True:
         if float == False:
-            return pygame.transform.scale(rawImage, newDimensions).convert_alpha(), pygame.Rect(pos, newDimensions)
+            return pygame.transform.scale(rawImage, new_dimensions).convert_alpha(), pygame.Rect(pos, new_dimensions)
         elif float == True:
-            return pygame.transform.scale(rawImage, newDimensions).convert_alpha(), pygame.FRect(pos, newDimensions)
+            return pygame.transform.scale(rawImage, new_dimensions).convert_alpha(), pygame.FRect(pos, new_dimensions)
         
         
 def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
@@ -58,10 +58,10 @@ def calcOffset(flavour):
 
 def allign(foreVol,  backVol = settings.RESOLUTION, backPos = (0,0), allignment = "centre"):
     ''' Allignment format: "centre, topmiddle, topleft, left, bottomleft ect '''
-    xCent = int((backVol[0] / 2) - (foreVol[0] / 2)) + backPos[0] 
-    yCent = int((backVol[1] / 2) - (foreVol[1] / 2)) + backPos[1]
+    x_cent = int((backVol[0] / 2) - (foreVol[0] / 2)) + backPos[0] 
+    y_cent = int((backVol[1] / 2) - (foreVol[1] / 2)) + backPos[1]
 
-    return xCent, yCent
+    return x_cent, y_cent
 
 
 def rotate(surface, angle, pivot, offset):
@@ -106,12 +106,12 @@ def blitRotate(surf, image, pos, originPos, angle):
 def get_neighbours(map, tile, layer = "tiles"):
     '''Layers: towers, tiles '''
     neighbours = []
-    pos = tile.gridPos
+    pos = tile.grid_pos
     for direction in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
-        neighbourPos = (pos[0] + direction[0], pos[1] + direction[1])
+        neighbour_pos = (pos[0] + direction[0], pos[1] + direction[1])
         try:
-            if layer == "tiles": neighbour = get_tile(map, neighbourPos, layer = "tiles")
-            if layer == "towers": neighbour = get_tile(map, neighbourPos, layer = "towers")
+            if layer == "tiles": neighbour = get_tile(map, neighbour_pos, layer = "tiles")
+            if layer == "towers": neighbour = get_tile(map, neighbour_pos, layer = "towers")
         except IndexError:
             neighbour = None
 
@@ -123,11 +123,11 @@ def get_tile(map, pos, layer = "tiles"):
     ''' Layers: towers, tiles '''
     if layer == "tiles":
         for tile in map.tiles:
-            if tile.gridPos == pos:
+            if tile.grid_pos == pos:
                 return tile
     elif layer == "towers":
         for tower in map.towers:
-            if tower.gridPos == pos:
+            if tower.grid_pos == pos:
                 return tower
     return None
 
