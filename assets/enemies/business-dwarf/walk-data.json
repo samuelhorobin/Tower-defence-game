@@ -168,9 +168,9 @@
   "scale": "1",
   "frameTags": [
    { "name": "South", "from": 0, "to": 3, "direction": "forward", "color": "#fe5b59ff" },
-   { "name": "South West", "from": 4, "to": 7, "direction": "forward", "color": "#f7a547ff" },
-   { "name": "West", "from": 8, "to": 11, "direction": "forward", "color": "#f3ce52ff" },
-   { "name": "North West", "from": 12, "to": 15, "direction": "forward", "color": "#6acd5bff" },
+   { "name": "South East", "from": 4, "to": 7, "direction": "forward", "color": "#f7a547ff" },
+   { "name": "East", "from": 8, "to": 11, "direction": "forward", "color": "#f3ce52ff" },
+   { "name": "North East", "from": 12, "to": 15, "direction": "forward", "color": "#6acd5bff" },
    { "name": "North", "from": 16, "to": 19, "direction": "forward", "color": "#57b9f2ff" }
   ],
   "layers": [

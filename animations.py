@@ -5,30 +5,30 @@ from dataclasses import dataclass, field
 @dataclass
 class Animation:
     S: list[list[pygame.Surface, int]]
-    SW: list[list[pygame.Surface, int]]
-    W: list[list[pygame.Surface, int]]
-    NW: list[list[pygame.Surface, int]]
+    SE: list[list[pygame.Surface, int]]
+    E: list[list[pygame.Surface, int]]
+    NE: list[list[pygame.Surface, int]]
     N: list[list[pygame.Surface, int]]
-    NE: list[list[pygame.Surface, int]] = field(init=False)
-    E: list[list[pygame.Surface, int]] = field(init=False)
-    SE: list[list[pygame.Surface, int]] = field(init=False)
+    NW: list[list[pygame.Surface, int]] = field(init=False)
+    W: list[list[pygame.Surface, int]] = field(init=False)
+    SW: list[list[pygame.Surface, int]] = field(init=False)
 
     def __post_init__(self):
-        self.NE = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.NW]
-        self.E = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.W]
-        self.SE = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.SW]
+        self.NW = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.NE]
+        self.W = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.E]
+        self.SW = [[pygame.transform.flip(image, True, False), interval] for image, interval in self.SE]
 
 
 def business_dwarf():
     path = "assets/enemies/business-dwarf"
 
-    directions = ["South", "South West", "West", "North West", "North"]
+    directions = ["South", "South East", "East", "North East", "North"]
 
     walk = [tools.get_animation(path, direction, spritesheet_name="walk-spritesheet", data_name="walk-data", name="walk") for direction in directions]
     idle = [tools.get_animation(path, direction, spritesheet_name="idle-spritesheet", data_name="idle-data", name="idle") for direction in directions]
 
     for stance in [walk, idle]:
-        for animation in range(len(stance)-1):
+        for animation in range(len(stance)):
             for frame in range(len(stance)-1):
                 stance[animation][frame][0] = tools.extrapolateImage(stance[animation][frame][0], (0,0), rect = False)
 
