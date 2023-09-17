@@ -24,8 +24,27 @@ def business_dwarf():
 
     directions = ["South", "South West", "West", "North West", "North"]
 
-    walk = Animation(*(tools.get_animation(path, direction, spritesheet_name="walk-spritesheet", data_name="walk-data", name="walk") for direction in directions))
-    idle = Animation(*(tools.get_animation(path, direction, spritesheet_name="idle-spritesheet", data_name="idle-data", name="idle") for direction in directions))
+    walk = [tools.get_animation(path, direction, spritesheet_name="walk-spritesheet", data_name="walk-data", name="walk") for direction in directions]
+    idle = [tools.get_animation(path, direction, spritesheet_name="idle-spritesheet", data_name="idle-data", name="idle") for direction in directions]
+
+    for stance in [walk, idle]:
+        for animation in range(len(stance)-1):
+            for frame in range(len(stance)-1):
+                stance[animation][frame][0] = tools.extrapolateImage(stance[animation][frame][0], (0,0), rect = False)
+
+    walk, idle = Animation(*walk), Animation(*idle)
+
+    return {"walk":walk, "idle":idle}
+
+
+# for stance in ["walk", "idle"]:
+#     for animation in businessDwarfAnimations[stance].__dict__: # Container of N, NW, W, SW, ect
+#         for frame in range(len(businessDwarfAnimations[stance].__dict__[animation])): # Frame indexes inside of N, NW, W, ect\
+#             print(businessDwarfAnimations[stance].__dict__[animation])
+#             print(frame, businessDwarfAnimations[stance].__dict__[animation])
+#             setattr(businessDwarfAnimations[stance], animation[frame], tools.extrapolateImage(businessDwarfAnimations[stance].__dict__[animation][frame][0], (0,0), rect = False))
+
+
 
     # walkS = tools.get_animation(path, "South", spritesheet_name="walk-spritesheet", data_name="walk-data", name="walk")
     # walkSW = tools.get_animation(path, "South West", spritesheet_name="walk-spritesheet", data_name="walk-data", name="walk")
@@ -45,7 +64,7 @@ def business_dwarf():
     # idleW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleE]
     # idleSW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleSE]
 
-    return [walk, idle]
+    return {"walk":walk, "idle":idle}
 
 def cogwheel():
     idleE = tools.get_animation("assets/towers/Cogwall", "idleE")
