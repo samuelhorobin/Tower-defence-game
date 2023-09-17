@@ -12,10 +12,13 @@ import settings
 businessDwarfAnimations = animations.business_dwarf()
 
 for animation_class in businessDwarfAnimations:
+            #print(animation_class)
+            print(animation_class.__dict__)
             for animation in animation_class.__dict__:
-                for frame in animation:
-                    setattr(animation, frame[0], tools.extrapolateImage(frame[0], (0,0), rect = False))
-                    # bookmark
+                for frame in animation_class.__dict__[animation]:
+                    print(frame)
+            
+#setattr(animation, frame[0], tools.extrapolateImage(frame[0], (0,0), rect = False))
 
 def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
     ''' L = max val, k = growth rate, a = xVal of midpoint'''
