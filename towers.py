@@ -19,7 +19,7 @@ class TowerAI(pygame.sprite.Sprite):
         super().__init__()
         self.identifier = 0
 
-        self.animationClock = self.idle_frame = self.walkFrame = 0
+        self.animation_clock = self.idle_frame = self.walkFrame = 0
         self.facing = "West"
         self.secondsPerFrame = 0.1
         self.health = 200
@@ -33,12 +33,12 @@ class TowerAI(pygame.sprite.Sprite):
         self.rect = pygame.FRect((0, 0), (self.image.get_size()))
         self.hitbox = pygame.FRect(
             (0, 0), (16 * settings.UPSCALE, 16 * settings.UPSCALE))
-        self.gridPos = None
+        self.grid_pos = None
 
         self.state = "idle"
 
     def set_pos(self, coords, map):
-        self.gridPos = coords
+        self.grid_pos = coords
 
         map.towerGrid[coords[1]][coords[0]] = self.identifier
 
@@ -50,14 +50,14 @@ class TowerAI(pygame.sprite.Sprite):
 
     def draw(self, screen):
         dt = 1/60
-        self.animationClock += dt * self.speed
+        self.animation_clock += dt * self.speed
 
         if self.state == "idle":
             screen.blit(self.animation[self.idle_frame][0], self.rect.topleft)
 
-            if self.animationClock >= self.secondsPerFrame:
+            if self.animation_clock >= self.secondsPerFrame:
                 self.idle_frame += 1
-                self.animationClock = 0
+                self.animation_clock = 0
 
                 if self.idle_frame == self.idle_frame_count:
                     self.idle_frame = 0

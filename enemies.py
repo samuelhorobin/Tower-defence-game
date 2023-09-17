@@ -11,15 +11,6 @@ import settings
 
 businessDwarfAnimations = animations.business_dwarf()
 
-for animation_class in businessDwarfAnimations:
-            #print(animation_class)
-            print(animation_class.__dict__)
-            for animation in animation_class.__dict__:
-                for frame in animation_class.__dict__[animation]:
-                    print(frame)
-            
-#setattr(animation, frame[0], tools.extrapolateImage(frame[0], (0,0), rect = False))
-
 def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
     ''' L = max val, k = growth rate, a = xVal of midpoint'''
     if differentiated == False:
@@ -32,8 +23,8 @@ def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
 class SpriteAI(pygame.sprite.Sprite):
     def __init__(self, speed = 1) -> None:
         super().__init__()
-
-        rawImageDir = os.path.join("Tower-defence-game", "assets", "enemies", "enemy.png")
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        rawImageDir = os.path.join(root_dir, "assets", "enemies", "enemy.png")
         rawImage = pygame.image.load(rawImageDir)
         self.image, self.rect = tools.extrapolateImage(rawImage, pos = (0,0), float = True)
         self.heightOffset = (8 * settings.UPSCALE) - self.image.get_height()
@@ -50,7 +41,7 @@ class SpriteAI(pygame.sprite.Sprite):
         self.hitbox = pygame.FRect((0,0), (14 * settings.UPSCALE, 14 * settings.UPSCALE))
         self.hitboxOffset = 1 * settings.UPSCALE
 
-        self.target = self.gridTarget = None
+        self.target = self.grid_target = None
         self.attacking = False
 
         self.accY = self.accX = 0 #Accumulated speeds for decimal movement
@@ -59,16 +50,16 @@ class SpriteAI(pygame.sprite.Sprite):
         self.spawning = True
         self.spawnIter = 0
 
-        self.gridPos = [len(map.tileGrid[row]) - 1, row]
+        self.grid_pos = [len(map.tile_grid[row]) - 1, row]
 
-        posX = map.pos[0] + len(map.tileGrid[row]) * 32 * settings.UPSCALE
+        posX = map.pos[0] + len(map.tile_grid[row]) * 32 * settings.UPSCALE
         posY = map.pos[1] + self.hitboxOffset + row * 16 * settings.UPSCALE
 
         self.hitbox.x, self.hitbox.y = posX, posY
         self.spawned = True
 
     def go_to(self, map, goals): #A* algorithm
-        self.gridJourney = map.NodeManager.navigate(self.gridPos, goals)
+        self.gridJourney = map.node_manager.navigate(self.grid_pos, goals)
         self.journey = [(map.pos[0] + node[0] * 32 * settings.UPSCALE, map.pos[1] + self.hitboxOffset + node[1] * 16 * settings.UPSCALE) for node in self.gridJourney]
 
         nodeOffset = (160 - self.hitbox.width) // 2
@@ -93,7 +84,7 @@ class SpriteAI(pygame.sprite.Sprite):
                     goals.append((x, y))
 
         self.target = self.go_up_to(map, goals)
-        self.gridTarget = tools.get_tile(map, self.target).gridPos
+        self.grid_target = tools.get_tile(map, self.target).grid_pos
 
     def adjust_to_tower(self, map):
         ''' Moves a sprite from diagonal of a tower to adjascent '''
@@ -102,12 +93,12 @@ class SpriteAI(pygame.sprite.Sprite):
             if neighbour != 3 and neighbour != None:
                 for secondNeighbour in tools.get_neighbours(map, neighbour, layer = "towers"):
                     if secondNeighbour != 0 and secondNeighbour != None:
-                        self.go_to(map, neighbour.gridPos)
+                        self.go_to(map, neighbour.grid_pos)
                         return  
 
-    def recalibrate_gridPos(self, map):
+    def recalibrate_grid_pos(self, map):
         tile = self.get_closest_tile(map)
-        self.gridPos = tile.gridPos
+        self.grid_pos = tile.grid_pos
     
     def get_closest_tile(self, map):
         for tile in map.tiles:
@@ -193,7 +184,7 @@ class SpriteAI(pygame.sprite.Sprite):
 
             if xBound and yBound:
                 self.journey.pop(0)
-                self.gridPos = self.gridJourney.pop(0)
+                self.grid_pos = self.gridJourney.pop(0)
                 if len(self.journey) > 0:
                     destX = self.journey[0][0]
                     destY = self.journey[0][1]
@@ -240,9 +231,11 @@ class BusinessDwarf(SpriteAI):
         self.secondsPerFrame = 0.2
         self.health = 100
         
-        self.walk, self.idle = businessDwarfAnimations
+        self.animations = businessDwarfAnimations
 
-        self.image = self.idleS[0][0]
+        self.image = self.animations["idle"].W[0][0]
+
+
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
         self.heightOffset = -3 * settings.UPSCALE
 
@@ -255,13 +248,13 @@ class BusinessDwarf(SpriteAI):
             self.adjust_to_tower(map)
 
         if self.isNextToTowerVar:
-            targetTower = tools.get_tile(map, self.gridTarget, layer = "towers")
+            targetTower = tools.get_tile(map, self.grid_target, layer = "towers")
             if targetTower != None:
                 selfCollisionDir = self.touching_tower(map, tower = targetTower)
 
         if len(self.journey) == 0 and self.isNextToTowerVar and not self.attacking:
             if selfCollisionDir == None:
-                self.go_to(map, targetTower.gridPos)
+                self.go_to(map, targetTower.grid_pos)
 
         if len(self.journey) != 0 and self.isNextToTowerVar:
             if selfCollisionDir != None:
@@ -306,47 +299,47 @@ class BusinessDwarf(SpriteAI):
         self.animationClock += dt * self.speed
 
         if self.movement == (0, 1):
-            screen.blit(self.walk.S[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].S[self.walkFrame][0], self.rect.topleft)
             self.facing = "South"
         if self.movement == (1, 1):
-            screen.blit(self.walk.SW[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].SE[self.walkFrame][0], self.rect.topleft)
             self.facing = "South-East"
         if self.movement == (1, 0):
-            screen.blit(self.walk.W[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].E[self.walkFrame][0], self.rect.topleft)
             self.facing = "East"
         if self.movement == (1, -1):
-            screen.blit(self.walk.NW[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].NE[self.walkFrame][0], self.rect.topleft)
             self.facing = "North-East"
         if self.movement == (0, -1):
-            screen.blit(self.walk.N[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].N[self.walkFrame][0], self.rect.topleft)
             self.facing = "North"
         if self.movement == (-1, -1):
-            screen.blit(self.walk.NE[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].NW[self.walkFrame][0], self.rect.topleft)
             self.facing = "North-West"
         if self.movement == (-1, 0):
-            screen.blit(self.walk.E[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].W[self.walkFrame][0], self.rect.topleft)
             self.facing = "West"
         if self.movement == (-1, 1):
-            screen.blit(self.walk.SE[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].SW[self.walkFrame][0], self.rect.topleft)
             self.facing = "South-West"
 
         if self.movement == (0,0):
             if self.facing == "South":
-                screen.blit(self.idle.S[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].S[self.walkFrame][0], self.rect.topleft)
             if self.facing == "South-East":
-                screen.blit(self.idle.SE[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].SE[self.walkFrame][0], self.rect.topleft)
             if self.facing == "East":
-                screen.blit(self.idle.E[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].E[self.walkFrame][0], self.rect.topleft)
             if self.facing == "North-East":
-                screen.blit(self.idle.NE[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].NE[self.walkFrame][0], self.rect.topleft)
             if self.facing == "North":
-                screen.blit(self.idle.N[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].N[self.walkFrame][0], self.rect.topleft)
             if self.facing == "North-West":
-                screen.blit(self.idle.NW[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].NW[self.walkFrame][0], self.rect.topleft)
             if self.facing == "West":
-                screen.blit(self.idle.W[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].W[self.walkFrame][0], self.rect.topleft)
             if self.facing == "South-West":
-                screen.blit(self.idle.SW[self.idleFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].SW[self.walkFrame][0], self.rect.topleft)
 
         if self.movement != (0, 0) and self.animationClock >= self.secondsPerFrame:
             

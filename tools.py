@@ -33,15 +33,15 @@ def get_animation(spritesheetDir, animation, spritesheet_name = "spritesheet", d
         return frames
     
 
-def extrapolateImage(rawImage, pos = None, float = False, rect = True):
-    new_dimensions = (rawImage.get_width() * settings.UPSCALE, rawImage.get_height() * settings.UPSCALE)
+def extrapolateImage(raw_image, pos = None, float = False, rect = True):
+    new_dimensions = (raw_image.get_width() * settings.UPSCALE, raw_image.get_height() * settings.UPSCALE)
     if rect == False:
-        return pygame.transform.scale(rawImage, new_dimensions).convert_alpha()
+        return pygame.transform.scale(raw_image, new_dimensions).convert_alpha()
     elif rect == True:
         if float == False:
-            return pygame.transform.scale(rawImage, new_dimensions).convert_alpha(), pygame.Rect(pos, new_dimensions)
+            return pygame.transform.scale(raw_image, new_dimensions).convert_alpha(), pygame.Rect(pos, new_dimensions)
         elif float == True:
-            return pygame.transform.scale(rawImage, new_dimensions).convert_alpha(), pygame.FRect(pos, new_dimensions)
+            return pygame.transform.scale(raw_image, new_dimensions).convert_alpha(), pygame.FRect(pos, new_dimensions)
         
         
 def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):

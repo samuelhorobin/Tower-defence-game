@@ -9,12 +9,12 @@ import numpy as np
 
 
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, pos, flavour, gridPos) -> None:
+    def __init__(self, pos, flavour, grid_pos) -> None:
         super().__init__()
         rawImageDir = tileflavours.tileFlavours[flavour]
         rawImage = pygame.image.load(rawImageDir)
         self.image, self.rect = tools.extrapolateImage(rawImage, pos)
-        self.gridPos = gridPos
+        self.grid_pos = grid_pos
         self.flavour = flavour
 
     def draw(self, screen) -> None:
@@ -30,7 +30,8 @@ class MapManager:
     def load(self, upperLayer, map: str, pos=(0, 0)):
         self.pos = pos
 
-        mapDir = os.path.join("Tower-defence-game", "assets", "maps", map)
+        root_dir = os.path.dirname(os.path.abspath(__file__))
+        mapDir = os.path.join(root_dir, "assets", "maps", map)
         dataDir = os.path.join(mapDir, f"{map}.tmj")
 
         with open(dataDir, "r") as f:
@@ -54,7 +55,7 @@ class MapManager:
                                     val in enumerate(tools.calcOffset(x))]
                 pos = (x_offset + (k * 32 * settings.UPSCALE),
                        y_offset + (i * 16 * settings.UPSCALE))
-                tile = Tile(pos=pos, flavour=str(x), gridPos=(k, i))
+                tile = Tile(pos=pos, flavour=str(x), grid_pos=(k, i))
 
                 if x in whitelist:
                     self.tiles.add(tile)
