@@ -20,7 +20,7 @@ class Animation:
 
 
 def business_dwarf():
-    path = "Tower-defence-game/assets/enemies/business-dwarf"
+    path = "assets/enemies/business-dwarf"
 
     directions = ["South", "South West", "West", "North West", "North"]
 
@@ -48,11 +48,11 @@ def business_dwarf():
     return [walk, idle]
 
 def cogwheel():
-    idleE = tools.get_animation("Tower-defence-game/assets/towers/Cogwall", "idleE")
+    idleE = tools.get_animation("assets/towers/Cogwall", "idleE")
     idleW = [[pygame.transform.flip(image, True, False), interval] for image, interval in idleE]
     
     return [idleE, idleW]
 
 def skull():
-    spin = tools.get_animation("Tower-defence-game/assets/particles/skull 8x8", "spin")
+    spin = tools.get_animation("assets/particles/skull 8x8", "spin")
     return spin

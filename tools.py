@@ -5,10 +5,13 @@ import settings
 import numpy as np
 
 def get_animation(spritesheetDir, animation, spritesheet_name = "spritesheet", data_name = "data", name = None):
-    spritePng = os.path.join(spritesheetDir, f"{spritesheet_name}.png")
-    spriteJson = os.path.join(spritesheetDir, f"{data_name}.json")
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    sprite_png = os.path.join(root_dir, spritesheetDir, f"{spritesheet_name}.png")
+    sprite_json = os.path.join(root_dir, spritesheetDir, f"{data_name}.json")
+    
+    
 
-    with open(spriteJson, "r") as file:
+    with open(sprite_json, "r") as file:
         data = json.load(file)
         for tag in data["meta"]["frameTags"]:
             if tag["name"] == animation:
@@ -20,7 +23,7 @@ def get_animation(spritesheetDir, animation, spritesheet_name = "spritesheet", d
         framesData = [data["frames"][f"{name} {i}.aseprite"] for i in range(start, end + 1)]
 
         frames = []
-        spritesheet = pygame.image.load(spritePng)
+        spritesheet = pygame.image.load(sprite_png)
 
         for frame in framesData:
             x, y, w, h = [frame["frame"][i] for i in ["x", "y", "w", "h"]]
