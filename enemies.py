@@ -226,9 +226,9 @@ class SpriteAI(pygame.sprite.Sprite):
 class BusinessDwarf(SpriteAI):
     def __init__(self, speed = 1):
         super().__init__(speed=speed)
-        self.animationClock = self.idleFrame = self.walkFrame = 0
+        self.animation_clock = self.idle_frame = self.walk_frame = 0
         self.facing = "West"
-        self.secondsPerFrame = 0.2
+        self.seconds_per_frame = 0.2
         self.health = 100
         
         self.animations = businessDwarfAnimations
@@ -237,10 +237,7 @@ class BusinessDwarf(SpriteAI):
 
 
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
-        self.heightOffset = -3 * settings.UPSCALE
-
-
-        
+        self.height_offset = -3 * settings.UPSCALE
 
     def next_move(self, map):     
         if len(self.journey) == 0 and not self.isNextToTowerVar:
@@ -293,64 +290,64 @@ class BusinessDwarf(SpriteAI):
 
     def draw(self, screen):
         self.rect.midbottom = self.hitbox.midbottom
-        self.rect.y += self.heightOffset
+        self.rect.y += self.height_offset
 
         dt = 1/60
-        self.animationClock += dt * self.speed
+        self.animation_clock += dt * self.speed
 
         if self.movement == (0, 1):
-            screen.blit(self.animations["walk"].S[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].S[self.walk_frame][0], self.rect.topleft)
             self.facing = "South"
         if self.movement == (1, 1):
-            screen.blit(self.animations["walk"].SE[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].SE[self.walk_frame][0], self.rect.topleft)
             self.facing = "South-East"
         if self.movement == (1, 0):
-            screen.blit(self.animations["walk"].E[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].E[self.walk_frame][0], self.rect.topleft)
             self.facing = "East"
         if self.movement == (1, -1):
-            screen.blit(self.animations["walk"].NE[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].NE[self.walk_frame][0], self.rect.topleft)
             self.facing = "North-East"
         if self.movement == (0, -1):
-            screen.blit(self.animations["walk"].N[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].N[self.walk_frame][0], self.rect.topleft)
             self.facing = "North"
         if self.movement == (-1, -1):
-            screen.blit(self.animations["walk"].NW[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].NW[self.walk_frame][0], self.rect.topleft)
             self.facing = "North-West"
         if self.movement == (-1, 0):
-            screen.blit(self.animations["walk"].W[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].W[self.walk_frame][0], self.rect.topleft)
             self.facing = "West"
         if self.movement == (-1, 1):
-            screen.blit(self.animations["walk"].SW[self.walkFrame][0], self.rect.topleft)
+            screen.blit(self.animations["walk"].SW[self.walk_frame][0], self.rect.topleft)
             self.facing = "South-West"
 
         if self.movement == (0,0):
             if self.facing == "South":
-                screen.blit(self.animations["idle"].S[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].S[self.idle_frame][0], self.rect.topleft)
             if self.facing == "South-East":
-                screen.blit(self.animations["idle"].SE[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].SE[self.idle_frame][0], self.rect.topleft)
             if self.facing == "East":
-                screen.blit(self.animations["idle"].E[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].E[self.idle_frame][0], self.rect.topleft)
             if self.facing == "North-East":
-                screen.blit(self.animations["idle"].NE[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].NE[self.idle_frame][0], self.rect.topleft)
             if self.facing == "North":
-                screen.blit(self.animations["idle"].N[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].N[self.idle_frame][0], self.rect.topleft)
             if self.facing == "North-West":
-                screen.blit(self.animations["idle"].NW[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].NW[self.idle_frame][0], self.rect.topleft)
             if self.facing == "West":
-                screen.blit(self.animations["idle"].W[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].W[self.idle_frame][0], self.rect.topleft)
             if self.facing == "South-West":
-                screen.blit(self.animations["idle"].SW[self.walkFrame][0], self.rect.topleft)
+                screen.blit(self.animations["idle"].SW[self.idle_frame][0], self.rect.topleft)
 
-        if self.movement != (0, 0) and self.animationClock >= self.secondsPerFrame:
+        if self.movement != (0, 0) and self.animation_clock >= self.seconds_per_frame:
             
-            self.animationClock = 0
-            self.walkFrame += 1
-            if self.walkFrame == 4: self.walkFrame = 0
+            self.animation_clock = 0
+            self.walk_frame += 1
+            if self.walk_frame == 4: self.walk_frame = 0
 
-        elif self.movement == (0,0) and self.animationClock >= self.secondsPerFrame:
-            self.animationClock = 0
-            self.idleFrame += 1
-            if self.idleFrame == 4: self.idleFrame = 0
+        elif self.movement == (0,0) and self.animation_clock >= self.seconds_per_frame:
+            self.animation_clock = 0
+            self.idle_frame += 1
+            if self.idle_frame == 4: self.idle_frame = 0
 
         # Hitbox
         #pygame.draw.rect(screen, (255,50,50), self.hitbox)

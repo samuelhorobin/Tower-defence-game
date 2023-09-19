@@ -86,6 +86,7 @@ def main():
                 pygame.quit()
                 raise SystemExit
             elif event.type == pygame.KEYDOWN:
+                print("true")
                 keybinds.respond(event.key)
         
         SCREEN.fill((0,0,0))
@@ -105,7 +106,7 @@ def main():
         pygame.display.update()
         
 
-        if frame % 20 == 0:
+        if frame % 10 == 0:
             test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
             test.spawn(map, random.randint(0,7))
             foreground.add(test)

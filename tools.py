@@ -20,7 +20,6 @@ def get_animation(spritesheetDir, animation, spritesheet_name = "spritesheet", d
 
         if name == None:
             name = os.path.basename(spritesheetDir)
-        print(name)
         framesData = [data["frames"][f"{name} {i}.aseprite"] for i in range(start, end + 1)]
 
         frames = []

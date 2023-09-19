@@ -4,6 +4,8 @@ import animations
 import tools
 import particles
 
+import random
+
 from enum import Enum
 
 cogWheelAnimations = animations.cogwheel()
@@ -104,6 +106,6 @@ class CogWheel(TowerAI):
         self.attack_box.midleft = self.hitbox.midright
         for enemy in map.enemies:
             if self.attack_box.colliderect(enemy.hitbox):
-                enemy.damage(50, foreground, angle = -90)
+                enemy.damage(random.randint(75, 200), foreground, angle = -90)
 
         # pygame.draw.rect(screen, (255,250,50), self.attackBox)
