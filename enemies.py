@@ -285,10 +285,14 @@ class BusinessDwarf(SpriteAI):
             code, name = direction
 
             if self.movement == vector:
-                screen.blit(
-                    getattr(self.animations["walk"], code)[self.walk_frame][0],
-                    self.rect.topleft,
-                )
+                image, frame_time = getattr(self.animations["walk"], code)[self.walk_frame]
+                screen.blit(image, self.rect.topleft)
+
+                if self.animation_clock >= frame_time / 1000:
+                    self.animation_clock = 0
+                    self.walk_frame += 1
+                    if self.walk_frame == 4: self.walk_frame = 0
+
                 self.facing = name
 
         if self.movement == (0,0):
@@ -296,20 +300,16 @@ class BusinessDwarf(SpriteAI):
                 code, name = direction
 
                 if self.facing == name:
-                    screen.blit(
-                        getattr(self.animations["idle"], code)[self.idle_frame][0],
-                        self.rect.topleft,
-                    )
+                    image, frame_time = getattr(self.animations["idle"], code)[self.idle_frame]
+                    screen.blit(image, self.rect.topleft)
+                    
+                    if self.animation_clock >= frame_time / 1000:
+                        self.animation_clock = 0
+                        self.idle_frame += 1
+                        if self.idle_frame == 4: self.idle_frame = 0
+                
 
-        if self.movement != (0, 0) and self.animation_clock >= self.seconds_per_frame:
-            self.animation_clock = 0
-            self.walk_frame += 1
-            if self.walk_frame == 4: self.walk_frame = 0
-
-        elif self.movement == (0,0) and self.animation_clock >= self.seconds_per_frame:
-            self.animation_clock = 0
-            self.idle_frame += 1
-            if self.idle_frame == 4: self.idle_frame = 0
+        
 
         # Hitbox
         #pygame.draw.rect(screen, (255,50,50), self.hitbox)
