@@ -55,8 +55,6 @@ def main():
         map.towers.add(cog)
         foreground.add(cog)
 
-    
-
     while True:
         dt = clock.tick(settings.FPS) / 1000
         frame += 1
@@ -71,7 +69,6 @@ def main():
                 keybinds.respond(event.key)
         
         SCREEN.fill((0,0,0))
-
         
         map.enemies.update(map)
         map.towers.update(map, foreground)
@@ -83,14 +80,12 @@ def main():
         foreground.draw(SCREEN)
         
         pygame.display.update()
-        
 
         if frame % 100 == 0:
             test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
             test.spawn(map, random.randint(0,7))
             foreground.add(test)
             map.enemies.add(test)
-
 
 if __name__ == "__main__":
     profiler = cProfile.Profile()
