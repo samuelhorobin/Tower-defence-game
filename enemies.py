@@ -278,19 +278,11 @@ class BusinessDwarf(SpriteAI):
         dt = 1/60
         self.animation_clock += dt * self.speed
 
-        directions = [
-            (0, 1, "S", "South"),
-            (1, 1, "SE", "South-East"),
-            (1, 0, "E", "East"),
-            (1, -1, "NE", "North-East"),
-            (0, -1, "N", "North"),
-            (-1, -1, "NW", "North-West"),
-            (-1, 0, "W", "West"),
-            (-1, 1, "SW", "South-West"),
-        ]
+        vectors = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
+        directions = [("S", "South"), ("SE", "South-East"), ("E", "East"), ("NE", "North-East"), ("N", "North"), ("NW", "North-West"), ("W", "West"), ("SW", "South-West")]
 
-        for direction in directions:
-            *vector, code, name = direction
+        for vector, direction in zip(vectors, directions):
+            code, name = direction
 
             if self.movement == vector:
                 screen.blit(
@@ -300,22 +292,14 @@ class BusinessDwarf(SpriteAI):
                 self.facing = name
 
         if self.movement == (0,0):
-            if self.facing == "South":
-                screen.blit(self.animations["idle"].S[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "South-East":
-                screen.blit(self.animations["idle"].SE[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "East":
-                screen.blit(self.animations["idle"].E[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "North-East":
-                screen.blit(self.animations["idle"].NE[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "North":
-                screen.blit(self.animations["idle"].N[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "North-West":
-                screen.blit(self.animations["idle"].NW[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "West":
-                screen.blit(self.animations["idle"].W[self.idle_frame][0], self.rect.topleft)
-            elif self.facing == "South-West":
-                screen.blit(self.animations["idle"].SW[self.idle_frame][0], self.rect.topleft)
+            for direction in directions:
+                code, name = direction
+
+                if self.facing == name:
+                    screen.blit(
+                        getattr(self.animations["idle"], code)[self.idle_frame][0],
+                        self.rect.topleft,
+                    )
 
         if self.movement != (0, 0) and self.animation_clock >= self.seconds_per_frame:
             self.animation_clock = 0
