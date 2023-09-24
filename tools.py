@@ -151,3 +151,11 @@ def collisionDir(rect1, rect2):
         if deltaY < 0 and deltaX > 0: return (-1, 1)
         if deltaY > 0 and deltaX < 0: return (1, -1)
         if deltaY < 0 and deltaX < 0: return (1, 1)
+
+def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
+    ''' L = max val, k = growth rate, a = xVal of midpoint'''
+    if differentiated == False:
+        return L / (1 + np.exp(-k * (x - x0)))
+    
+    elif differentiated == True:
+        return (L * k * np.exp(-k * (x - x0))) / (1 + np.exp(-k * (x - x0)))**2

@@ -71,7 +71,6 @@ class Grid:
                     continue
                 if childPos[1] < 0 or self.height <= childPos[1]:
                     continue
-
                 if self.grid[childPos[0]][childPos[1]] != 0:
                     continue
 
@@ -92,9 +91,7 @@ class Grid:
                     continue
 
                 child.g = currentNode.g + 1
-
                 child.h = 0
-                
                 if heuristic == True:
                     for endNode in endNodes:
                         h = (((child.pos[0] - endNode.pos[0]) ** 2) + ((child.pos[1] - endNode.pos[1]) ** 2))**(1/2)

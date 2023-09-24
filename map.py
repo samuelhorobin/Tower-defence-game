@@ -80,7 +80,7 @@ class MapManager:
         self.pos = pos
 
         self.tiles.empty()
-        upperLayer.list.empty()
+        upperLayer.sprites.empty()
 
         self.load_tiles(upperLayer)
 

@@ -18,26 +18,7 @@ import tools
 import towers
 import particles
 import map as mp
-
-
-
-# Classes
-class BlitSort:
-    def __init__(self) -> None:
-        self.list = pygame.sprite.Group()
-
-    def add(self, sprite): self.list.add(sprite)
-    def remove(self, sprite): self.list.remove(sprite)
-
-    def sort(self):
-        sortedSprites = sorted(self.list.sprites(), key=lambda sprite: sprite.rect.bottom)
-        self.list = pygame.sprite.Group(sortedSprites)
-
-    def draw(self, screen):
-        self.sort()
-        for sprite in self.list:
-            sprite.draw(screen)
-            
+import camera
 
 def main():
     pygame.display.set_caption("Game")
@@ -45,17 +26,17 @@ def main():
 
     frame = 0
 
-    foreground = BlitSort()
+    foreground = camera.Camera()
 
     map = mp.MapManager()
     map.load(foreground, "testMap3")
     map.setpos(tools.allign(map.size), foreground)
     map.load_pathing()
     
-    subject = enemies.BusinessDwarf(speed = 5)
-    subject.spawn(map, 3)
-    foreground.add(subject)
-    map.enemies.add(subject)
+    # subject = enemies.BusinessDwarf(speed = 5)
+    # subject.spawn(map, 3)
+    # foreground.add(subject)
+    # map.enemies.add(subject)
 
     cog = towers.CogWheel()
     cog.set_pos((0,4), map)
@@ -101,12 +82,10 @@ def main():
         map.draw(SCREEN)
         foreground.draw(SCREEN)
         
-        
-
         pygame.display.update()
         
 
-        if frame % 10 == 0:
+        if frame % 100 == 0:
             test = enemies.BusinessDwarf(speed = random.uniform(2, 3))
             test.spawn(map, random.randint(0,7))
             foreground.add(test)

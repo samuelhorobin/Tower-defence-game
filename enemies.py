@@ -11,15 +11,6 @@ import settings
 
 businessDwarfAnimations = animations.business_dwarf()
 
-def logistic_function(x, L = 1, k = 10, x0 = 0.5, differentiated = False):
-    ''' L = max val, k = growth rate, a = xVal of midpoint'''
-    if differentiated == False:
-        return L / (1 + np.exp(-k * (x - x0)))
-    
-    elif differentiated == True:
-        return (L * k * np.exp(-k * (x - x0))) / (1 + np.exp(-k * (x - x0)))**2
-
-
 class SpriteAI(pygame.sprite.Sprite):
     def __init__(self, speed = 1) -> None:
         super().__init__()
@@ -162,7 +153,7 @@ class SpriteAI(pygame.sprite.Sprite):
         self.movement = (0,0)
 
         if self.spawning == True:
-            deltaX = logistic_function(self.spawnIter, differentiated = True) * 2 * self.speed
+            deltaX = tools.logistic_function(self.spawnIter, differentiated = True) * 2 * self.speed
             self.spawnIter += 0.01
             self.hitbox.move_ip(-abs(deltaX), 0)
 
@@ -219,10 +210,6 @@ class SpriteAI(pygame.sprite.Sprite):
         self.move()
         self.draw()
             
-
-
-
-
 class BusinessDwarf(SpriteAI):
     def __init__(self, speed = 1):
         super().__init__(speed=speed)
@@ -230,12 +217,8 @@ class BusinessDwarf(SpriteAI):
         self.facing = "West"
         self.seconds_per_frame = 0.2
         self.health = 100
-        
         self.animations = businessDwarfAnimations
-
         self.image = self.animations["idle"].W[0][0]
-
-
         self.rect = pygame.FRect((0,0), (self.image.get_size()))
         self.height_offset = -3 * settings.UPSCALE
 
@@ -339,7 +322,6 @@ class BusinessDwarf(SpriteAI):
                 screen.blit(self.animations["idle"].SW[self.idle_frame][0], self.rect.topleft)
 
         if self.movement != (0, 0) and self.animation_clock >= self.seconds_per_frame:
-            
             self.animation_clock = 0
             self.walk_frame += 1
             if self.walk_frame == 4: self.walk_frame = 0
