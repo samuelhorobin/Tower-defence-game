@@ -271,7 +271,7 @@ class BusinessDwarf(SpriteAI):
                 foreground.add(particle)
                 particles.RectParticle_Manager.particles.add(particle)
 
-    def draw(self, screen):
+    def load(self):
         self.rect.midbottom = self.hitbox.midbottom
         self.rect.y += self.height_offset
 
@@ -289,7 +289,6 @@ class BusinessDwarf(SpriteAI):
             if self.movement == vector:
                 image, frame_time = getattr(
                     self.animations["walk"], code)[self.walk_frame]
-                screen.blit(image, self.rect.topleft)
 
                 if self.animation_clock >= frame_time / 1000:
                     self.animation_clock = 0
@@ -305,12 +304,13 @@ class BusinessDwarf(SpriteAI):
                 if self.facing == name:
                     image, frame_time = getattr(
                         self.animations["idle"], code)[self.idle_frame]
-                    screen.blit(image, self.rect.topleft)
                     
                     if self.animation_clock >= frame_time / 1000:
                         self.animation_clock = 0
                         self.idle_frame += 1
                         if self.idle_frame == 4: self.idle_frame = 0
+
+        return image, self.rect.topleft
                 
 
         
