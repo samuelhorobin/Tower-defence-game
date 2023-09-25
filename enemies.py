@@ -279,13 +279,16 @@ class BusinessDwarf(SpriteAI):
         self.animation_clock += dt * self.speed
 
         vectors = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1)]
-        directions = [("S", "South"), ("SE", "South-East"), ("E", "East"), ("NE", "North-East"), ("N", "North"), ("NW", "North-West"), ("W", "West"), ("SW", "South-West")]
+        directions = [("S", "South"), ("SE", "South-East"), ("E", "East"),
+                      ("NE", "North-East"), ("N", "North"), ("NW", "North-West"),
+                      ("W", "West"), ("SW", "South-West")]
 
         for vector, direction in zip(vectors, directions):
             code, name = direction
 
             if self.movement == vector:
-                image, frame_time = getattr(self.animations["walk"], code)[self.walk_frame]
+                image, frame_time = getattr(
+                    self.animations["walk"], code)[self.walk_frame]
                 screen.blit(image, self.rect.topleft)
 
                 if self.animation_clock >= frame_time / 1000:
@@ -300,7 +303,8 @@ class BusinessDwarf(SpriteAI):
                 code, name = direction
 
                 if self.facing == name:
-                    image, frame_time = getattr(self.animations["idle"], code)[self.idle_frame]
+                    image, frame_time = getattr(
+                        self.animations["idle"], code)[self.idle_frame]
                     screen.blit(image, self.rect.topleft)
                     
                     if self.animation_clock >= frame_time / 1000:
