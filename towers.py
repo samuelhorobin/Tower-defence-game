@@ -84,19 +84,19 @@ class CogWheel(TowerAI):
         self.attack_box = pygame.Rect(
             (0, 0), (8*settings.UPSCALE, 16*settings.UPSCALE))
 
-    def draw(self, screen):
+    def load(self):
         self.dt = 1/60
         self.animation_clock += self.dt * self.speed
 
         if self.state == "idle":
-            screen.blit(self.animation[self.idle_frame][0], self.rect.topleft)
-
             if self.animation_clock >= self.secondsPerFrame:
                 self.idle_frame += 1
                 self.animation_clock = 0
 
                 if self.idle_frame == self.idleFrameCount:
                     self.idle_frame = 0
+            
+        return self.animation[self.idle_frame][0], self.rect.topleft
 
     def update(self, map, foreground):
         if self.idle_frame == 4 and self.animation_clock == 0 + self.dt * self.speed:

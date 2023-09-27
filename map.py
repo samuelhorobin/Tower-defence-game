@@ -17,8 +17,8 @@ class Tile(pygame.sprite.Sprite):
         self.grid_pos = grid_pos
         self.flavour = flavour
 
-    def draw(self, screen) -> None:
-        screen.blit(self.image, self.rect.topleft)
+    def load(self) -> None:
+        return (self.image, self.rect.topleft)
 
 
 class MapManager:
@@ -27,7 +27,7 @@ class MapManager:
         self.towers = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
 
-    def load(self, upperLayer, map: str, pos=(0, 0)):
+    def load_map(self, upperLayer, map: str, pos=(0, 0)):
         self.pos = pos
 
         root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -45,6 +45,7 @@ class MapManager:
 
         self.size = (len(self.tile_grid) * 32 * settings.UPSCALE,
                      len(self.tile_grid[0]) * 16 * settings.UPSCALE)
+        
         self.load_tiles(upperLayer)
 
     def load_tiles(self, foreground):
@@ -83,6 +84,3 @@ class MapManager:
         upperLayer.sprites.empty()
 
         self.load_tiles(upperLayer)
-
-    def draw(self, screen):
-        self.tiles.draw(screen)
