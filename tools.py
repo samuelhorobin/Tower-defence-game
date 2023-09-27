@@ -123,10 +123,12 @@ def get_neighbours(map, tile, layer = "tiles"):
     return neighbours
 
 def get_tile(map, pos, layer = "tiles"):
+    print(map.tiles, pos)
     ''' Layers: towers, tiles '''
     if layer == "tiles":
         for tile in map.tiles:
             if tile.grid_pos == pos:
+                print(tile, pos)
                 return tile
     elif layer == "towers":
         for tower in map.towers:

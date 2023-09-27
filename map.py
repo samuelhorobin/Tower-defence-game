@@ -27,7 +27,7 @@ class MapManager:
         self.towers = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
 
-    def load_map(self, upperLayer, map: str, pos=(0, 0)):
+    def load_map(self, foreground, background, map: str, pos=(0, 0)):
         self.pos = pos
 
         root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -46,9 +46,9 @@ class MapManager:
         self.size = (len(self.tile_grid) * 32 * settings.UPSCALE,
                      len(self.tile_grid[0]) * 16 * settings.UPSCALE)
         
-        self.load_tiles(upperLayer)
+        self.load_tiles(foreground, background)
 
-    def load_tiles(self, foreground):
+    def load_tiles(self, foreground, background):
         whitelist = [1, 2]
         for i, y in enumerate(self.tile_grid):
             for k, x in enumerate(y):
@@ -59,6 +59,7 @@ class MapManager:
                 tile = Tile(pos=pos, flavour=str(x), grid_pos=(k, i))
 
                 if x in whitelist:
+                    background.add(tile)
                     self.tiles.add(tile)
                 elif x == 3:
                     foreground.add(tile)
@@ -77,10 +78,11 @@ class MapManager:
                 else:
                     self.node_manager.add_wall(i, k)
 
-    def setpos(self, pos, upperLayer):
+    def setpos(self, pos, foreground, background):
         self.pos = pos
 
         self.tiles.empty()
-        upperLayer.sprites.empty()
+        foreground.sprites.empty()
+        background.sprites.empty()
 
-        self.load_tiles(upperLayer)
+        self.load_tiles(foreground, background)
